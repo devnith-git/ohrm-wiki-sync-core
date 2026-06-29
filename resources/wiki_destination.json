@@ -2074,11 +2074,11 @@
     "node_count": {
       "books": 16,
       "chapters": 38,
-      "pages": 206,
-      "deprecated": 0
+      "pages": 205,
+      "deprecated": 1
     },
-    "last_synced_at": "2026-06-29T071610Z",
-    "last_synced_run": "orange_sign_daily_sync",
+    "last_synced_at": "2026-06-29T071551Z",
+    "last_synced_run": "roster_daily_sync",
     "last_synced_commit_sha": null
   },
   "canonical_guideline_page": {
