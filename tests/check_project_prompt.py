@@ -68,7 +68,10 @@ def main():
 
     # destination navigation: slug entry resolves and rolls up cleanly (page_id present)
     dest_raw = open(os.path.join(CORE, "resources", "wiki_destination.json"), "rb").read()
-    dest = json.loads(base64.b64decode(dest_raw))
+    try:
+        dest = json.loads(base64.b64decode(dest_raw))   # legacy base64 encoding
+    except Exception:
+        dest = json.loads(dest_raw)                     # canonical raw JSON
     cm = dest.get("routine_destinations", {}).get(SLUG)
     if cm and cm.get("page_id"):
         ok(f"destination resolves: page_id={cm['page_id']} ({cm.get('page_name')}) book={cm.get('book_id')} chapter={cm.get('chapter_id')}")
