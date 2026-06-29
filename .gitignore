@@ -1,0 +1,45 @@
+# Secrets — never commit
+.env
+.env.local
+.env.*.local
+*.env.txt
+resources/wiki.env.txt
+**/wiki.env.txt
+**/credentials.json
+**/secrets.yaml
+
+# OAuth client credentials cached by routines/oauth_setup.py.
+# Holds CLIENT_ID + CLIENT_SECRET for fast re-mint of refresh tokens
+# (the refresh token itself is NEVER cached — only lives in the
+# routines UI). Each operator's laptop has its own copy.
+.oauth_local.json
+routines/.oauth_local.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Local outputs / caches
+automation/out/
+automation/cache/
+wiki_cache/
+merged_specs/
+tool-results/
+*.log
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp

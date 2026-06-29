@@ -1,0 +1,54 @@
+# Per-project defaults for the standalone CLI (automation/sync.py).
+#
+# IMPORTANT: This file is the CLI's secondary configuration. The
+# CANONICAL destination map for the production routines (cm_daily_sync,
+# pnp_daily_sync, ...) lives in `resources/wiki_destination.json` — that
+# file drives every scheduled routine fire. Entries below should mirror
+# the canonical map for routines that exist in both worlds. If they
+# diverge, `resources/wiki_destination.json` wins for routines; this
+# file only affects ad-hoc local CLI runs.
+#
+# NOTE: `automation/sync.py` is DEPRECATED as of 2026-05-17 — its LLM
+# prompt emits a pre-canonical HTML schema (h3 anchors, [New — KEY]
+# markers, yellow row tints) that the routines now explicitly forbid.
+# Use the scheduled routines instead. This file is kept up-to-date for
+# anyone who still needs the CLI for a specific local workflow.
+#
+# CLI args (--source-page-id, --target-page-id, --target-chapter-id,
+# --new-page-title) override these.
+
+projects:
+
+  # CM (Compensation Management) — production routine target.
+  # Mirrors resources/wiki_destination.json -> routine_destinations.cm_daily_sync.
+  CM:
+    project_name: "Compensation Management"
+    source_page_id: 360         # Salary (canonical spec page)
+    target_page_id: 360         # update the canonical Salary page (matches routine)
+    target_chapter_id: 117      # Specification > Employee Management > Employee Profile
+    new_page_title: "Salary"    # only used in --new-page-title create-flow
+
+  # PNP (Performance Core) — production routine target.
+  # Mirrors resources/wiki_destination.json -> routine_destinations.pnp_daily_sync.
+  PNP:
+    project_name: "Performance Core"
+    source_page_id: 546         # Performance Core (canonical spec page)
+    target_page_id: 546         # update the canonical Performance Core page (matches routine)
+    target_chapter_id:          # null — page lives directly under the Performance book
+    new_page_title: "Performance Core"
+
+  # LMR (Leave Module Revamping) — no production routine yet.
+  # PLACEHOLDER: zero values prevent accidental writes. Update with real
+  # ids before running the CLI for this project.
+  LMR:
+    project_name: "Leave Module Revamping"
+    source_page_id: 0           # TODO: real page id required before use
+    target_chapter_id: 0        # TODO: real chapter id required before use
+    new_page_title: "Leave - Revamp"
+
+  # Add more projects here as needed. For production routines, ALSO
+  # register the destination in resources/wiki_destination.json so the
+  # routine can find it at STEP 2. Use routines/scaffold.py to do both
+  # in one shot.
+  # The CLI needs at minimum: source_page_id, plus either target_page_id
+  # (update) or target_chapter_id + new_page_title (create).

@@ -1,0 +1,11 @@
+{
+  "_comment": "Email-notification recipient list for routine run logs. Read by routines/send_notification.py at the end of every routine fire (STEP 10 in SKILL.md). Edit and commit this file to add or remove subscribers — the next routine run picks up the new list (no redeploy needed). Addresses must be syntactically valid; the sender script skips obvious garbage with a logged warning rather than aborting.",
+  "_documentation": {
+    "primary": "Always-include recipients. Receives every routine run notification.",
+    "additional": "Opt-in subscribers. Same behavior as primary; the split is purely organisational so it's clear who the owner is vs who has subscribed."
+  },
+  "primary": [
+    "devnith@orangehrm.com"
+  ],
+  "additional": []
+}

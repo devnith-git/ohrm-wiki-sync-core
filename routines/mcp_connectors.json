@@ -1,0 +1,15 @@
+{
+  "_comment": "Canonical MCP connector triples for every routine in this repo. Auto-loaded by deploy.py. Add new entries here when wiring a new MCP into the routine fleet — deploy.py picks them up on next --create or --update. Only Jira (Atlassian) and the OrangeHRM BookStack wiki are inspected; the routine never fetches Google Drive / Docs bodies (URLs are kept as links inside the global User Interfaces (UIs) gallery at the bottom of the wiki page).",
+  "connectors": [
+    {
+      "connector_uuid": "af43bc0a-a7ec-4b6a-b841-7e574624993f",
+      "name": "Atlassian",
+      "url": "https://mcp.atlassian.com/v1/mcp"
+    },
+    {
+      "connector_uuid": "b6ed3c23-ccf2-4ebb-8d8a-ac2bf810496a",
+      "name": "OrangeHRM-Wiki",
+      "url": "https://mcp.orangehrm.com/wiki/mcp"
+    }
+  ]
+}
