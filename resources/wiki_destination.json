@@ -926,7 +926,7 @@
         "id": 12,
         "name": "Leave",
         "slug": "leave",
-        "sort_order": 3,
+        "sort_order": 4,
         "deprecated_at": null,
         "chapters": [
           {
@@ -1147,7 +1147,7 @@
         "id": 13,
         "name": "Performance",
         "slug": "performance",
-        "sort_order": 4,
+        "sort_order": 8,
         "deprecated_at": null,
         "chapters": [
           {
@@ -1428,7 +1428,7 @@
         "id": 15,
         "name": "Reports & Analytics",
         "slug": "reports-analytics",
-        "sort_order": 6,
+        "sort_order": 3,
         "deprecated_at": null,
         "chapters": [],
         "orphan_pages": [
@@ -1655,7 +1655,7 @@
         "id": 17,
         "name": "Attendance",
         "slug": "attendance",
-        "sort_order": 8,
+        "sort_order": 6,
         "deprecated_at": null,
         "chapters": [
           {
@@ -2077,8 +2077,8 @@
       "pages": 205,
       "deprecated": 1
     },
-    "last_synced_at": "2026-06-29T071551Z",
-    "last_synced_run": "roster_daily_sync",
+    "last_synced_at": "2026-06-29T213408Z",
+    "last_synced_run": "orange_sign_daily_sync",
     "last_synced_commit_sha": "68b55ed41f133a26a2c3ed5d8338644debfef1fd"
   },
   "canonical_guideline_page": {
