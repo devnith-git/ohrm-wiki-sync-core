@@ -1131,15 +1131,29 @@ via the GitHub Contents API. The commit message format:
 chore(nav_tree): <routine_slug> STEP 2 nav-tree sync — +<a> discovered, -<b> deprecated, <c> renamed, <d> reordered
 ```
 
-Target branch:
-- For routines running against `main`, commit to `main`.
-- For routines running against a test branch (`test/cs-dryrun-*`,
-  `claude/*`), commit to that same branch.
+Target repo + branch (split core + per-project layout):
+- The `specification_nav_tree` lives in the **core repo
+  `devnith-git/ohrm-wiki-sync-core`** → `resources/wiki_destination.json`
+  on `main`. The self-commit MUST target the **core repo**, NOT the
+  per-project repo the routine was checked out from (project repos have
+  no `resources/wiki_destination.json`). Commit via the GitHub Contents
+  API: `GET /repos/devnith-git/ohrm-wiki-sync-core/contents/resources/wiki_destination.json?ref=main`
+  for the current `sha` → `PUT` the updated file with that `sha` and
+  `branch=main`.
+- `GITHUB_TOKEN` has **`contents:write` on `ohrm-wiki-sync-core`**
+  (the shared fleet token; verified `push=true`). **Do NOT assume the
+  token is read-only.** If the `PUT` returns a non-2xx, record the
+  **exact HTTP status code + response body** (secrets redacted) as the
+  skip reason — NEVER write a generic "read-only" cause. On `409`/`412`
+  (a concurrent routine updated the file first), re-`GET` the `sha`,
+  re-apply the nav-tree delta, and retry once.
 
-If `GITHUB_TOKEN` is unset, skip the self-commit silently but STILL
-log every diff line under `## STEP 2.x — Nav-Tree Sync` in the audit
-log. The next fire with a token will pick up the unwritten delta and
-commit it.
+If `GITHUB_TOKEN` is genuinely unset (zero-length), skip the self-commit
+silently but STILL log every diff line under `## STEP 2.x — Nav-Tree
+Sync` in the audit log; the next fire with a token picks up the
+unwritten delta. The phrase "read-only" may only appear as a skip reason
+if an actual GitHub `403` was received AND its body (which explicitly
+states the permission failure) is quoted verbatim in the log.
 
 If the diff is empty (zero changes), no commit is made; the routine
 logs `specification_nav_tree: no change (<books> books, <chapters>
