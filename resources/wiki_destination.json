@@ -2123,10 +2123,10 @@
       "book_name": "Roster",
       "chapter_id": null,
       "chapter_name": null,
-      "release_scope": "8.1",
+      "release_scope": "__EPIC_ATOMIC__",
       "jira_project_key": "ROS",
       "epic_filter": null,
-      "last_verified": "2026-05-13T00:00:00Z",
+      "last_verified": "2026-06-29T00:00:00Z",
       "last_synced_at": "2026-06-13T214513Z",
       "_history": "Corrected via roster_daily_sync auto-detection on 2026-06-24T214225Z: page_id 29->548, book_id 33->36, jira_project_key RST->ROS, release_scope 8.0.2->8.1."
     },

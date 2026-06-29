@@ -1256,3 +1256,58 @@ any missing runs into the canonical CSV + xlsx on `main`. This guarantees every
 run lands on `main` even if a routine's own STEP 9 didn't. The in-routine STEP 9
 (§17.3) still gives the richest per-issue before/after rows; the Consolidator
 adds a summary row for any run the in-routine step missed.
+
+## 18. Epic-Atomic Completeness Mode (`release_scope = __EPIC_ATOMIC__`)
+
+When a routine's `release_scope` is the literal sentinel `__EPIC_ATOMIC__`,
+the routine REPLACES the single-`fixVersion` release gate (§3–§6) with
+**epic-level atomic gating**. Scope becomes "every *complete* epic of the
+project", not one version. Routines with a normal `release_scope` value keep
+§3–§6 single-`fixVersion` gating unchanged — this mode is strictly opt-in.
+
+### 18.1 Definitions
+- A **child story** of an epic = any `Story` / `Task` whose `parent` (Epic
+  Link) is that epic. Bugs / Sub-tasks are excluded by type (§8 + the bug
+  carve-out file) and are NOT counted as child stories for completeness.
+- A child story is **complete** iff it passes ALL existing per-story checks —
+  §7 completion (`statusCategory.key == "done"`), §8 exclusion (resolution /
+  status / labels), source-material sanity — **AND** is **released**: it has
+  at least one `fixVersion` AND **every** `fixVersion` on it has
+  `released == true`.
+- An epic **QUALIFIES** iff it has ≥1 child story **and EVERY** child story is
+  complete. If even one child story is not complete (not done, no fixVersion,
+  any unreleased fixVersion, or excluded for cause), the **ENTIRE epic FAILS**
+  and contributes nothing to the wiki this run. This is atomic — no partial
+  epics.
+
+### 18.2 Procedure (replaces the STEP 3 story query)
+1. Enumerate epics: JQL `project = <KEY> AND issuetype = Epic`.
+2. For each epic, fetch all child stories: JQL
+   `project = <KEY> AND parent = <EPIC_KEY> AND issuetype in (Story, Task)`.
+3. Evaluate each epic against §18.1 QUALIFIES.
+4. `ELIGIBLE_STORIES` = the union of child stories of all QUALIFYING epics.
+   (They already passed the per-story checks, so STEP 4 becomes a re-confirm,
+   not a re-filter.)
+5. **Gate outcome:** CONFIRMED if ≥1 epic qualifies → proceed to STEP 5
+   compose. If ZERO epics qualify → `status=SKIPPED reason='no epic passed
+   atomic completeness'` (skip STEP 5–7; still run STEP 8 / 9 / 10).
+
+### 18.3 Epic Release Status (STEP 3-D) under this mode
+Report one row per epic using the **SAME** criterion as the sync scope (the
+"what is reported complete" set MUST equal the "what is synced" set — never
+diverge):
+- `✓ Complete` — epic QUALIFIES (all child stories complete); its stories are
+  synced this run.
+- `⚠ Incomplete` — epic FAILS; list the blocking child stories with the reason
+  per story (`not-done` / `no-fixVersion` / `unreleased-fixVersion:<name>` /
+  `excluded:<cause>`). These stories are NOT synced.
+
+Orphan stories (no `parent` epic) are never synced in this mode — list them in
+a final `(no epic)` incomplete bucket.
+
+### 18.4 Unchanged downstream
+Everything after scope selection — STEP 5 compose, §10 canonical tables, §10.3
+de-duplication, STEP 6 validation, STEP 7 diff-aware write — is unchanged. Only
+the *membership* of `ELIGIBLE_STORIES` changes. Writes remain additive and
+idempotent; an epic that later completes simply contributes its rows on the
+next run.
