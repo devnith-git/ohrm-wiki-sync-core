@@ -71,7 +71,7 @@
             "id": 18,
             "name": "Users",
             "slug": "users",
-            "sort_order": 2,
+            "sort_order": 1,
             "deprecated_at": null,
             "pages": [
               {
@@ -87,7 +87,7 @@
             "id": 75,
             "name": "Announcements",
             "slug": "announcements",
-            "sort_order": 3,
+            "sort_order": 2,
             "deprecated_at": null,
             "pages": [
               {
@@ -117,7 +117,7 @@
             "id": 101,
             "name": "Job",
             "slug": "job",
-            "sort_order": 5,
+            "sort_order": 3,
             "deprecated_at": null,
             "pages": [
               {
@@ -161,7 +161,7 @@
             "id": 103,
             "name": "Configurations",
             "slug": "configurations",
-            "sort_order": 6,
+            "sort_order": 4,
             "deprecated_at": null,
             "pages": [
               {
@@ -275,7 +275,7 @@
             "id": 113,
             "name": "Organization",
             "slug": "organization",
-            "sort_order": 8,
+            "sort_order": 5,
             "deprecated_at": null,
             "pages": [
               {
@@ -319,7 +319,7 @@
             "id": 125,
             "name": "Back-End Configurations",
             "slug": "back-end-configurations",
-            "sort_order": 9,
+            "sort_order": 6,
             "deprecated_at": null,
             "pages": [
               {
@@ -345,7 +345,7 @@
             "id": 332,
             "name": "Manage User Roles",
             "slug": "manage-user-roles-IGE",
-            "sort_order": 4,
+            "sort_order": 2,
             "deprecated_at": null,
             "url": "/books/hr-administration/page/manage-user-roles-IGE"
           },
@@ -353,7 +353,7 @@
             "id": 260,
             "name": "Audit Trail",
             "slug": "audit-trail",
-            "sort_order": 7,
+            "sort_order": 3,
             "deprecated_at": null,
             "url": "/books/hr-administration/page/audit-trail"
           }
@@ -370,7 +370,7 @@
             "id": 41,
             "name": "Competencies",
             "slug": "competencies",
-            "sort_order": 2,
+            "sort_order": 1,
             "deprecated_at": null,
             "pages": [
               {
@@ -386,7 +386,7 @@
             "id": 79,
             "name": "Configurations",
             "slug": "configurations",
-            "sort_order": 3,
+            "sort_order": 2,
             "deprecated_at": null,
             "pages": [
               {
@@ -479,7 +479,7 @@
             "id": 80,
             "name": "Manage Data",
             "slug": "manage-data",
-            "sort_order": 4,
+            "sort_order": 3,
             "deprecated_at": null,
             "pages": [
               {
@@ -495,7 +495,7 @@
             "id": 81,
             "name": "Assets",
             "slug": "assets",
-            "sort_order": 5,
+            "sort_order": 4,
             "deprecated_at": null,
             "pages": [
               {
@@ -532,7 +532,7 @@
             "id": 84,
             "name": "Qualifications",
             "slug": "qualifications",
-            "sort_order": 6,
+            "sort_order": 5,
             "deprecated_at": null,
             "pages": [
               {
@@ -576,7 +576,7 @@
             "id": 85,
             "name": "Nationalities",
             "slug": "nationalities",
-            "sort_order": 7,
+            "sort_order": 6,
             "deprecated_at": null,
             "pages": [
               {
@@ -592,7 +592,7 @@
             "id": 86,
             "name": "Discipline",
             "slug": "discipline",
-            "sort_order": 8,
+            "sort_order": 7,
             "deprecated_at": null,
             "pages": [
               {
@@ -600,27 +600,27 @@
                 "name": "Document Templates",
                 "slug": "",
                 "sort_order": 1,
-                "deprecated_at": "2026-06-29T213200Z"
+                "deprecated_at": null
               },
               {
                 "id": 208,
                 "name": "Disciplinary Cases",
                 "slug": "disciplinary-cases",
-                "sort_order": 1,
+                "sort_order": 2,
                 "deprecated_at": null
               },
               {
                 "id": 209,
                 "name": "Document Templates",
                 "slug": "document-templates-B5Q",
-                "sort_order": 2,
+                "sort_order": 3,
                 "deprecated_at": null
               },
               {
                 "id": 316,
                 "name": "My Actions",
                 "slug": "my-actions",
-                "sort_order": 3,
+                "sort_order": 4,
                 "deprecated_at": null
               }
             ]
@@ -629,7 +629,7 @@
             "id": 93,
             "name": "Employee List",
             "slug": "employee-list",
-            "sort_order": 9,
+            "sort_order": 8,
             "deprecated_at": null,
             "pages": [
               {
@@ -645,7 +645,7 @@
             "id": 94,
             "name": "Dashboard",
             "slug": "dashboard",
-            "sort_order": 10,
+            "sort_order": 9,
             "deprecated_at": null,
             "pages": [
               {
@@ -661,7 +661,7 @@
             "id": 96,
             "name": "Announcements",
             "slug": "announcements",
-            "sort_order": 12,
+            "sort_order": 10,
             "deprecated_at": null,
             "pages": [
               {
@@ -684,7 +684,7 @@
             "id": 97,
             "name": "Organization Chart",
             "slug": "organization-chart",
-            "sort_order": 13,
+            "sort_order": 11,
             "deprecated_at": null,
             "pages": [
               {
@@ -714,7 +714,7 @@
             "id": 100,
             "name": "Purge Records",
             "slug": "purge-records",
-            "sort_order": 14,
+            "sort_order": 12,
             "deprecated_at": null,
             "pages": [
               {
@@ -744,7 +744,7 @@
             "id": 117,
             "name": "Employee Profile",
             "slug": "employee-profile",
-            "sort_order": 16,
+            "sort_order": 13,
             "deprecated_at": null,
             "pages": [
               {
@@ -858,7 +858,7 @@
             "id": 153,
             "name": "iCalendar Feeds",
             "slug": "icalendar-feeds",
-            "sort_order": 18,
+            "sort_order": 14,
             "deprecated_at": null,
             "pages": [
               {
@@ -874,7 +874,7 @@
             "id": 158,
             "name": "Back-End Configurations",
             "slug": "back-end-configurations",
-            "sort_order": 19,
+            "sort_order": 15,
             "deprecated_at": null,
             "pages": [
               {
@@ -900,7 +900,7 @@
             "id": 210,
             "name": "Buzz",
             "slug": "buzz",
-            "sort_order": 11,
+            "sort_order": 2,
             "deprecated_at": null,
             "url": "/books/employee-management/page/buzz"
           },
@@ -908,7 +908,7 @@
             "id": 301,
             "name": "Directory",
             "slug": "directory",
-            "sort_order": 15,
+            "sort_order": 3,
             "deprecated_at": null,
             "url": "/books/employee-management/page/directory"
           },
@@ -916,7 +916,7 @@
             "id": 397,
             "name": "My Info",
             "slug": "my-info",
-            "sort_order": 17,
+            "sort_order": 4,
             "deprecated_at": null,
             "url": "/books/employee-management/page/my-info"
           }
@@ -926,14 +926,14 @@
         "id": 12,
         "name": "Leave",
         "slug": "leave",
-        "sort_order": 4,
+        "sort_order": 3,
         "deprecated_at": null,
         "chapters": [
           {
             "id": 104,
             "name": "Entitlements",
             "slug": "entitlements",
-            "sort_order": 8,
+            "sort_order": 1,
             "deprecated_at": null,
             "pages": [
               {
@@ -963,7 +963,7 @@
             "id": 105,
             "name": "Configure",
             "slug": "configure",
-            "sort_order": 9,
+            "sort_order": 2,
             "deprecated_at": null,
             "pages": [
               {
@@ -1121,7 +1121,7 @@
             "id": 333,
             "name": "Leave List",
             "slug": "leave-list-7SM",
-            "sort_order": 10,
+            "sort_order": 8,
             "deprecated_at": null,
             "url": "/books/leave/page/leave-list-7SM"
           },
@@ -1129,7 +1129,7 @@
             "id": 552,
             "name": "Leave Blackout Periods",
             "slug": "leave-blackout-periods",
-            "sort_order": 11,
+            "sort_order": 9,
             "deprecated_at": null,
             "url": "/books/leave/page/leave-blackout-periods"
           },
@@ -1137,7 +1137,7 @@
             "id": 554,
             "name": "iCal Leave Feed",
             "slug": "ical-leave-feed",
-            "sort_order": 12,
+            "sort_order": 10,
             "deprecated_at": null,
             "url": "/books/leave/page/ical-leave-feed"
           }
@@ -1147,7 +1147,7 @@
         "id": 13,
         "name": "Performance",
         "slug": "performance",
-        "sort_order": 8,
+        "sort_order": 4,
         "deprecated_at": null,
         "chapters": [
           {
@@ -1205,7 +1205,7 @@
             "id": 120,
             "name": "Goals",
             "slug": "goals-vkU",
-            "sort_order": 4,
+            "sort_order": 2,
             "deprecated_at": null,
             "pages": [
               {
@@ -1235,7 +1235,7 @@
             "id": 107,
             "name": "Employee Tracker",
             "slug": "employee-tracker",
-            "sort_order": 5,
+            "sort_order": 3,
             "deprecated_at": null,
             "pages": [
               {
@@ -1265,7 +1265,7 @@
             "id": 108,
             "name": "Configuration",
             "slug": "configuration",
-            "sort_order": 7,
+            "sort_order": 4,
             "deprecated_at": null,
             "pages": [
               {
@@ -1297,7 +1297,7 @@
             "id": 287,
             "name": "Appraisal Cycles",
             "slug": "appraisal-cycles",
-            "sort_order": 2,
+            "sort_order": 1,
             "deprecated_at": null,
             "url": "/books/performance/page/appraisal-cycles"
           },
@@ -1305,7 +1305,7 @@
             "id": 136,
             "name": "My Appraisals",
             "slug": "my-appraisals",
-            "sort_order": 3,
+            "sort_order": 2,
             "deprecated_at": null,
             "url": "/books/performance/page/my-appraisals"
           },
@@ -1313,7 +1313,7 @@
             "id": 294,
             "name": "Competency Profiles",
             "slug": "competency-profiles",
-            "sort_order": 6,
+            "sort_order": 3,
             "deprecated_at": null,
             "url": "/books/performance/page/competency-profiles"
           },
@@ -1321,7 +1321,7 @@
             "id": 551,
             "name": "Performance Core",
             "slug": "performance-core-Y0Z",
-            "sort_order": 8,
+            "sort_order": 4,
             "deprecated_at": null,
             "url": "/books/performance/page/performance-core-Y0Z"
           }
@@ -1338,7 +1338,7 @@
             "id": 87,
             "name": "Employee Timesheets",
             "slug": "employee-timesheets",
-            "sort_order": 2,
+            "sort_order": 1,
             "deprecated_at": null,
             "pages": [
               {
@@ -1354,7 +1354,7 @@
             "id": 88,
             "name": "My Timesheets",
             "slug": "my-timesheets",
-            "sort_order": 3,
+            "sort_order": 2,
             "deprecated_at": null,
             "pages": [
               {
@@ -1370,7 +1370,7 @@
             "id": 78,
             "name": "Activity Info",
             "slug": "activity-info",
-            "sort_order": 4,
+            "sort_order": 3,
             "deprecated_at": null,
             "pages": [
               {
@@ -1400,7 +1400,7 @@
             "id": 82,
             "name": "Configuration",
             "slug": "configuration",
-            "sort_order": 5,
+            "sort_order": 4,
             "deprecated_at": null,
             "pages": [
               {
@@ -1428,7 +1428,7 @@
         "id": 15,
         "name": "Reports & Analytics",
         "slug": "reports-analytics",
-        "sort_order": 3,
+        "sort_order": 6,
         "deprecated_at": null,
         "chapters": [],
         "orphan_pages": [
@@ -1469,7 +1469,7 @@
             "id": 5,
             "name": "Vacancies",
             "slug": "vacancies",
-            "sort_order": 2,
+            "sort_order": 1,
             "deprecated_at": null,
             "pages": [
               {
@@ -1520,7 +1520,7 @@
             "id": 6,
             "name": "Candidates",
             "slug": "candidates",
-            "sort_order": 3,
+            "sort_order": 2,
             "deprecated_at": null,
             "pages": [
               {
@@ -1585,7 +1585,7 @@
             "id": 22,
             "name": "Configuration",
             "slug": "configuration",
-            "sort_order": 4,
+            "sort_order": 3,
             "deprecated_at": null,
             "pages": [
               {
@@ -1655,14 +1655,14 @@
         "id": 17,
         "name": "Attendance",
         "slug": "attendance",
-        "sort_order": 6,
+        "sort_order": 8,
         "deprecated_at": null,
         "chapters": [
           {
             "id": 21,
             "name": "ESS - My Monthly Attendance",
             "slug": "ess-my-monthly-attendance",
-            "sort_order": 3,
+            "sort_order": 1,
             "deprecated_at": null,
             "pages": [
               {
@@ -1678,7 +1678,7 @@
             "id": 20,
             "name": "My Records",
             "slug": "my-records",
-            "sort_order": 9,
+            "sort_order": 2,
             "deprecated_at": null,
             "pages": [
               {
@@ -1712,7 +1712,7 @@
             "id": 141,
             "name": "ESS - My Attendance Sheet",
             "slug": "ess-my-attendance-sheet",
-            "sort_order": 4,
+            "sort_order": 3,
             "deprecated_at": null,
             "url": "/books/attendance/page/ess-my-attendance-sheet"
           },
@@ -1720,7 +1720,7 @@
             "id": 151,
             "name": "Pay Policies",
             "slug": "pay-policies",
-            "sort_order": 5,
+            "sort_order": 4,
             "deprecated_at": null,
             "url": "/books/attendance/page/pay-policies"
           },
@@ -1728,7 +1728,7 @@
             "id": 132,
             "name": "Approve Attendance Sheets",
             "slug": "approve-attendance-sheets",
-            "sort_order": 6,
+            "sort_order": 5,
             "deprecated_at": null,
             "url": "/books/attendance/page/approve-attendance-sheets"
           },
@@ -1736,7 +1736,7 @@
             "id": 130,
             "name": "Employee Records",
             "slug": "employee-records",
-            "sort_order": 7,
+            "sort_order": 6,
             "deprecated_at": null,
             "url": "/books/attendance/page/employee-records"
           },
@@ -1744,7 +1744,7 @@
             "id": 128,
             "name": "Configurations",
             "slug": "configurations",
-            "sort_order": 8,
+            "sort_order": 7,
             "deprecated_at": null,
             "url": "/books/attendance/page/configurations"
           },
@@ -1752,7 +1752,7 @@
             "id": 281,
             "name": "Attendance Sheets",
             "slug": "attendance-sheets",
-            "sort_order": 10,
+            "sort_order": 8,
             "deprecated_at": null,
             "url": "/books/attendance/page/attendance-sheets"
           },
@@ -1760,7 +1760,7 @@
             "id": 282,
             "name": "Punch In/Out",
             "slug": "punch-inout",
-            "sort_order": 11,
+            "sort_order": 9,
             "deprecated_at": null,
             "url": "/books/attendance/page/punch-inout"
           }
@@ -1777,7 +1777,7 @@
             "id": 109,
             "name": "Configuration",
             "slug": "configuration",
-            "sort_order": 4,
+            "sort_order": 1,
             "deprecated_at": null,
             "pages": [
               {
@@ -2064,7 +2064,7 @@
             "id": 549,
             "name": "Orange Sign Core",
             "slug": "orange-sign-core",
-            "sort_order": 1,
+            "sort_order": 2,
             "deprecated_at": null,
             "url": "/books/orange-sign/page/orange-sign-core"
           }
@@ -2077,8 +2077,8 @@
       "pages": 205,
       "deprecated": 1
     },
-    "last_synced_at": "2026-06-29T213200Z",
-    "last_synced_run": "roster_daily_sync",
+    "last_synced_at": "2026-06-29T214333Z",
+    "last_synced_run": "cm_daily_sync",
     "last_synced_commit_sha": "68b55ed41f133a26a2c3ed5d8338644debfef1fd"
   },
   "canonical_guideline_page": {
