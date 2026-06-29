@@ -1,5 +1,5 @@
 {
-  "_comment": "Canonical BookStack destination map for the OHRM enterprise wiki. Single source of truth for every routine in this repo. Routines MUST read this file at startup (STEP 2 repo-aware bootstrap) and use specification_shelf.id as the anchor for destination discovery. Do NOT enumerate /api/books at the top level looking for 'Specifications' -- that book does not exist; 'Specification' is a SHELF. BookStack hierarchy: Shelves \u2192 Books \u2192 Chapters \u2192 Pages. Last verified against the live wiki: 2026-05-13.",
+  "_comment": "Canonical BookStack destination map for the OHRM enterprise wiki. Single source of truth for every routine in this repo. Routines MUST read this file at startup (STEP 2 repo-aware bootstrap) and use specification_shelf.id as the anchor for destination discovery. Do NOT enumerate /api/books at the top level looking for 'Specifications' -- that book does not exist; 'Specification' is a SHELF. BookStack hierarchy: Shelves → Books → Chapters → Pages. Last verified against the live wiki: 2026-05-13.",
   "wiki": {
     "base_url": "https://enterprisewiki.orangehrm.com",
     "auth_method": "Bearer-token-style header: Authorization: Token <WIKI_TOKEN_ID>:<WIKI_TOKEN_SECRET>",
@@ -600,7 +600,7 @@
                 "name": "Document Templates",
                 "slug": "",
                 "sort_order": 1,
-                "deprecated_at": "2026-06-29T055851Z"
+                "deprecated_at": null
               },
               {
                 "id": 208,
@@ -2074,11 +2074,11 @@
     "node_count": {
       "books": 16,
       "chapters": 38,
-      "pages": 205,
-      "deprecated": 1
+      "pages": 206,
+      "deprecated": 0
     },
-    "last_synced_at": "2026-06-29T055851Z",
-    "last_synced_run": "pnp_daily_sync",
+    "last_synced_at": "2026-06-29T071610Z",
+    "last_synced_run": "orange_sign_daily_sync",
     "last_synced_commit_sha": null
   },
   "canonical_guideline_page": {
@@ -2173,7 +2173,7 @@
     "_deprecation_note": "When a book or page is deprecated (removed from the live wiki), add its ID to the appropriate protected list and set deprecated_at on the nav_tree entry. Routines will skip deprecated destinations and log a warning.",
     "_scope_note": "release_scope values like '8.0.2' refer to Jira fixVersion strings, not BookStack versions. The wiki does not use version numbers -- it is a living document updated continuously.",
     "_multi_epic_note": "Some routines cover multiple epics (e.g., cs_features_daily_sync may cover several CS epics). In those cases, epic_filter will be a comma-separated string or an array. Currently all active routines use a single epic filter or null.",
-    "_book_creation_note": "New books are created by routines during FIRST-FIRE BOOTSTRAP when the target book does not yet exist in the shelf. The routine creates the book via POST /api/books, then creates the target page, then commits the new IDs back to wiki_destination.json. See SKILL.md \u00a715 for the full bootstrap protocol.",
+    "_book_creation_note": "New books are created by routines during FIRST-FIRE BOOTSTRAP when the target book does not yet exist in the shelf. The routine creates the book via POST /api/books, then creates the target page, then commits the new IDs back to wiki_destination.json. See SKILL.md §15 for the full bootstrap protocol.",
     "_nav_tree_note": "The specification_nav_tree is updated by any routine that performs a live shelf walk (STEP 2.6). The tree is a snapshot, not a live view. Routines must always call GET /api/shelves/3 to get the live tree before making structural decisions.",
     "_reserved_fields": [
       "last_synced_at",
