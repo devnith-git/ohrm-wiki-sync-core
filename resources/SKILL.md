@@ -1333,11 +1333,25 @@ Skipped / Blocked rows are required for transparency.)
 ### 9-A. Email template file (the master)
 
 The routine does NOT inline an HTML template here. The template lives
-in **`resources/email_template.html`** — a single reusable HTML file
-with documented placeholders. STEP 9 reads it, substitutes placeholders
-per §9-B / §9-C / §9-D / §9-E, and writes the substituted result
-between the `<!-- EMAIL_BODY_START -->` / `<!-- EMAIL_BODY_END -->`
+in **`_core/resources/email_template.html`** (the copy cloned into
+`_core/` at STEP 2; in the legacy single-repo layout it was
+`resources/email_template.html`) — a single reusable HTML file with
+documented placeholders. STEP 9 reads **that exact file**, substitutes
+placeholders per §9-B / §9-C / §9-D / §9-E, and writes the substituted
+result between the `<!-- EMAIL_BODY_START -->` / `<!-- EMAIL_BODY_END -->`
 markers in the log file.
+
+**MANDATORY — never improvise the email body.** The emitted EMAIL_BODY
+MUST be the *complete* `email_template.html` after substitution: it MUST
+begin with the template's `<html>` / `<body>` root and retain EVERY
+section and table the template defines (header, status-summary table,
+Stories / List / Search / Form / Audit tables as applicable, Epic
+Release Status, Spec Files, Manual Actions, footer). You MUST NOT
+hand-author, summarize, shorten, or restructure the body, and MUST NOT
+emit a body made of loose `<h2>` / `<h3>` / `<ul>` fragments in place of
+the template. If `_core/resources/email_template.html` cannot be read,
+do NOT invent a body — set `email_send_status: FAILED
+reason='email_template.html unreadable'` and skip the send.
 
 This makes the template:
 - **Project-agnostic** — same template renders for CM, PNP, and any
@@ -1539,7 +1553,7 @@ the block they wrap is kept verbatim with placeholders substituted.
 
 ### 9-E. After substitution
 
-After running the substitutions above on `resources/email_template.html`:
+After running the substitutions above on `_core/resources/email_template.html`:
 1. Strip the `{{epicScanBlockStart}}` / `{{epicScanBlockEnd}}` marker
    lines (whether the block is kept or removed).
 2. Strip the `{{manualActionsBlockStart}}` / `{{manualActionsBlockEnd}}`
@@ -1550,7 +1564,14 @@ After running the substitutions above on `resources/email_template.html`:
    unrendered variable hits the recipient). If any remain, abort the
    email step with `email_send_status: FAILED reason='unrendered
    placeholder in template: <name>'`.
-5. Emit the result between `<!-- EMAIL_BODY_START -->` and
+5. **Structure self-check (MANDATORY).** Confirm the rendered body
+   begins with the template root (`<html` … `<body`) and contains the
+   template's status-summary table plus its section `<h2>` headers. If it
+   does NOT (e.g. it starts with a bare `<h2>`, or is a short
+   hand-written summary), you did NOT render the template — discard it,
+   re-read `_core/resources/email_template.html`, substitute again, and
+   re-check. NEVER emit a non-template body.
+6. Emit the result between `<!-- EMAIL_BODY_START -->` and
    `<!-- EMAIL_BODY_END -->` in the log file.
 
 ### 9-F. Status color palette
