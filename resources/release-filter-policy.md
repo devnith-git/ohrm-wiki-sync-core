@@ -166,7 +166,7 @@ types that represent a deliverable specifiable unit:
 | **Epic** | ❌ no — Epics are containers, not specifiable units. The routine walks the Epic for its child stories; the child stories' content goes into the ATC table. Never write a row for the Epic itself. | ✅ |
 | **Story** | ✅ yes — feature spec content | ✅ |
 | **Task** | ✅ yes — work-item content | ✅ |
-| **Bug** | ❌ no — bugs document defects, not spec | ✅ |
+| **Bug** | ⚠️ **carve-out** — ordinary bugs excluded (defects, not spec), **EXCEPT requirement-defect Bugs**, which ARE processed per `bug-requirement-filter-policy.md` (authority level 1.5): a Bug flagged `Type Of Defect = Requirement`, or carrying a `[Requirement]` summary prefix, or with a qualifying requirement-confirming comment (§1.3), is promoted and processed **exactly like a Story**. | ✅ |
 | **Sub-task** | ❌ no — content folds into parent story | ✅ |
 | **Improvement** | ❌ no — folds into the affected feature's section | ✅ |
 | **Refactor / Spike / other** | ❌ no — engineering work, not specifiable | ✅ |
@@ -174,12 +174,15 @@ types that represent a deliverable specifiable unit:
 For every issue returned by the fixVersion query, the routine
 classifies it into one of three buckets:
 
-- **processed** — Epic / Story / Task. Sub-section content is added or
+- **processed** — Epic / Story / Task, **plus requirement-defect Bugs**
+  promoted per the level-1.5 carve-out. Sub-section content is added or
   updated on the wiki page per §10.
-- **excluded by issue type** — Bug / Sub-task / Improvement / Refactor /
-  Spike / etc. Counted in the run log and email status bar (so the
-  Release Manager sees what was found) but NO wiki content is written
-  for these.
+- **excluded by issue type** — Sub-task / Improvement / Refactor /
+  Spike / etc., **and ordinary (non-requirement) Bugs**. Counted in the
+  run log and email status bar (so the Release Manager sees what was
+  found) but NO wiki content is written for these. (Requirement-defect
+  Bugs are the exception — they are promoted per
+  `bug-requirement-filter-policy.md` and processed like Stories.)
 - **excluded by scope filter** — fails completion (§7) or exclusion
   (§9) checks. Counted as skipped/blocked with the verbatim log line.
 
@@ -967,38 +970,87 @@ Performance, Leave, Attendance, etc.) — no project may opt out.
 
 ### 15.1 Query
 
+Two passes — an Epic's release identity is derived from the **set of
+its child stories' fixVersions, never from the Epic issue's own
+`fixVersions[]`.** An Epic legitimately spans several releases (e.g.
+`8.1` / `8.1.1` / `8.1.2`); collapsing that to a single version is
+wrong. The Epic's own `fixVersions[]` is ignored for classification
+(it is often unset or a stale single tag).
+
+**(a) Epics:**
 ```jql
 project = <JIRA_PROJECT_KEY> AND issuetype = Epic
 ```
+Fetch `fields = ["summary","status","resolution","fixVersions","labels"]`.
 
-Fetch with `fields = ["summary","status","resolution","fixVersions"]`.
-Paginate to completion. (Cap at the first 200 Epics returned; if the
-project has more, log `Note - epic scan capped at 200 results.` and
-proceed.)
+**(b) Epic children (Stories / Tasks):**
+```jql
+project = <JIRA_PROJECT_KEY> AND issuetype in (Story, Task)
+```
+Fetch `fields = ["summary","status","resolution","fixVersions","labels","parent"]`
+and group by `parent.key` (fall back to the "Epic Link" custom field
+if `parent` is empty on a classic project).
 
-### 15.2 Per-Epic release classification
+Paginate both to completion. Cap each at the first 200 results; if
+exceeded, log `Note - epic scan capped at 200 results.` and proceed.
 
-For each Epic returned, derive its release status from its
-`fixVersions[]` using the same Jira-only rules as §2 / §4 / §6:
+### 15.2 Per-Epic release classification (set-based)
 
-| Epic state | Status | Symbol |
-|---|---|---|
-| At least one fixVersion with `released==true` OR `releaseDate <= today` | **Released** | ✓ |
-| All fixVersions have `released==false` AND (no `releaseDate` OR `releaseDate > today`) | **Pending** | ⚠ |
-| Epic has no `fixVersions` attached | **Unassigned** | — |
-| Epic `status.name` / `resolution.name` / `labels[]` match the §9 exclusion tokens | **Excluded** | ✗ |
+For each Epic:
 
-The exclusion check wins over the released / pending check (an Epic
-marked Cancelled is **Excluded** even if it has a released
-fixVersion).
+1. **Deliverable children** = its child Story / Task issues, **plus any
+   child Bug that qualifies as a requirement defect** per
+   `bug-requirement-filter-policy.md` §1 (`Type Of Defect = Requirement`
+   OR `[Requirement]` summary prefix OR a qualifying requirement-
+   confirming comment per §1.3). A requirement-defect Bug changes the
+   documented spec, so it counts toward the Epic's release completeness
+   exactly like a Story. Ordinary (non-requirement) Bugs and Sub-tasks
+   are excluded per §8.
+2. **Read comments, then drop deferred children (MANDATORY — not
+   optional, not "only if already fetched").** For every active
+   deliverable child the routine MUST read its comments
+   (`GET /rest/api/3/issue/<KEY>/comment`, newest-first, bot authors
+   ignored). Reading serves two purposes:
+   - **(i) Deferral detection (§10.5 bucket 3).** A child deprioritized /
+     moved to a future release / descoped is *decided-out, not missing*
+     — drop it from the set; it never counts against the Epic (exactly
+     like PNP-10, "deprioritized and moved to a future release").
+   - **(ii) Requirement-defect promotion (`bug-requirement-filter-policy.md`
+     §1.3).** A child Bug whose comment carries the requirement signal is
+     promoted into step 1's deliverable set.
+   Children excluded by §9 tokens (status / resolution / labels) are also
+   dropped. **Reuse** any comment fetch already performed for the same
+   issue this run — never double-fetch.
+3. **Version set `V`** = the distinct fixVersion names across the
+   remaining **active** children.
+4. Classify each version in `V` as **released** (`released==true` OR
+   `releaseDate <= today`) or **pending** (per §2 / §4 / §6), then
+   label the Epic — **first matching row wins**:
+
+| # | Condition (after dropping deferred children) | Status | Symbol |
+|---|---|---|---|
+| 1 | Epic `status` / `resolution` / `labels[]` match the §9 exclusion tokens | **Excluded** | ✗ |
+| 2 | ≥1 active child has **no fixVersion** | **Incomplete** | ▲ |
+| 3 | Active children exist, all versioned, **every** version in `V` released | **Fully Released** | ✓ |
+| 4 | ≥1 version released **and** ≥1 version pending (all children versioned) | **Partially Released** | ◐ |
+| 5 | All children versioned, **no** version released | **Pending** | ⚠ |
+| 6 | No active deliverable children at all | **Unassigned** | — |
+
+Rule 1 (Excluded) wins over everything. Rule 2 (**Incomplete**) is the
+"a live story with no fixVersion means the Epic is not fully
+releasable" gate and takes precedence over the version-based labels —
+an Epic is **never Fully Released** while an active child is
+unversioned, even if every *assigned* version is released.
 
 ### 15.3 Counters
 
 Add to the run log (per §12):
 
-- `epics_scanned` — total Epics returned by §15.1
-- `epics_released` — count classified Released
+- `epics_scanned` — total Epics returned by §15.1(a)
+- `epics_fully_released` — count classified Fully Released
+- `epics_partially_released` — count classified Partially Released
 - `epics_pending` — count classified Pending
+- `epics_incomplete` — count classified Incomplete
 - `epics_unassigned` — count classified Unassigned
 - `epics_excluded` — count classified Excluded
 
@@ -1008,29 +1060,41 @@ For every Epic, record one entry with these fields:
 
 - `key` — Jira key (e.g. `CM-1`)
 - `name` — Jira `summary` verbatim
-- `fix_versions` — comma-separated `name` values (e.g. `8.0, 8.0.2`);
-  `—` (em-dash) if the array is empty
-- `status` — one of `Released` / `Pending` / `Unassigned` / `Excluded`
-- `symbol` — one of `✓` / `⚠` / `—` / `✗`
+- `status` — one of `Fully Released` / `Partially Released` /
+  `Pending` / `Incomplete` / `Unassigned` / `Excluded`
+- `symbol` — one of `✓` / `◐` / `⚠` / `▲` / `—` / `✗`
+- `version_breakdown` — one entry per version in `V`:
+  `{version, released (bool), done_count, total_count}`, rendered e.g.
+  `8.1 ✓ (5/5) · 8.1.1 ✓ (2/2) · 8.1.2 ⚠ (0/2)`; `—` when `V` is empty
+- `unversioned_children` — comma-separated keys of active children with
+  no fixVersion (e.g. `PNP-88`), or `—`
 
-These records populate `{{epicRows}}` in the email template per
-SKILL.md §9-C. The Epic Release Status section appears in the email
-only when `epics_scanned > 0`; on a project with zero Epics the entire
-block is removed via the `{{epicScanBlockStart}}` / `{{epicScanBlockEnd}}`
-conditional pair.
+`version_breakdown` **replaces** the old single `fix_versions`
+comma-list. These records populate `{{epicRows}}` in the email template
+per SKILL.md §9-C; the Epic Release Status section renders the
+per-version breakdown + `unversioned_children` per Epic. The section
+appears only when `epics_scanned > 0`; on a project with zero Epics the
+whole block is removed via the `{{epicScanBlockStart}}` /
+`{{epicScanBlockEnd}}` conditional pair. **Downstream render update:**
+`SKILL.md` §9-C and `email_template.html` must surface
+`version_breakdown` + `unversioned_children`; until they are updated
+they fall back to showing `status` + `symbol` only.
 
 ### 15.5 Strict separation from the update flow
 
-The per-Epic scan **never** causes a wiki write. Even if an Epic is
-classified **Released** here, its child stories are still subject to
-§1–§9 (fixVersion scope, completion, exclusion) before any wiki page
-is touched. The wiki page update flow remains driven exclusively by
-the configured `fixVersion` story query from §1.
+The per-Epic scan **never** causes a wiki write. Classification is
+reporting only. A story flows to the wiki solely via the configured
+`fixVersion` story query (§1) plus the §2–§9 gates on that story —
+never because its Epic is labelled Released, and never blocked because
+its Epic is labelled **Incomplete** / **Partially Released** /
+**Pending**.
 
-Conversely, an Epic classified **Pending** or **Unassigned** does not
-block the routine — the routine still proceeds to update wiki content
-for any story at the configured fixVersion that passes §1–§9. The
-Pending / Unassigned status is reported to the operator only.
+So an Epic spanning multiple releases contributes its stories **one
+release at a time**: its `8.1` stories on the `8.1`-scoped run, its
+`8.1.1` stories on the `8.1.1`-scoped run, its unversioned / pending
+stories not at all. An **Incomplete** or **Partially Released** Epic
+still has its already-released stories synced; the label only tells the
+operator the Epic is not yet fully covered.
 
 ---
 
