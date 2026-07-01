@@ -400,12 +400,12 @@ name should be in a tiny header format."*
        alt="Pay Grade List View">
 </a>
 
-<h6>Design References</h6>
-<p>
-  <strong>Figma:</strong> <a href="https://figma.com/file/...">Compensation UI v8.0</a><br>
-  <strong>Sketch:</strong> <a href="https://sketch.cloud/s/...">Pay Grade detail flow</a><br>
-</p>
 ```
+
+> **No Design References sub-block.** Design-tool links (Figma / Sketch /
+> InVision / etc.) are globally excluded per `release-filter-policy.md`
+> §11.0 and MUST NOT be rendered. The UI section ends after the last
+> `<h6>` + image pair.
 
 ### 3.2 Heading level
 
@@ -422,14 +422,13 @@ strictly limited to:
 - Repeating `<h6>{Topic}</h6>` + `<a href><img></a>` pairs, one per
   screen. The image MUST immediately follow its `<h6>` with no
   intervening tags.
-- An optional `<h6>Design References</h6>` sub-block at the end with
-  external design-tool links wrapped in **one** `<p><strong>Figma:</strong>
-  <a href>...</a></p>` element.
+  (No Design References sub-block — design-tool links are globally
+  excluded per `release-filter-policy.md` §11.0.)
 
 **Forbidden inside the UI section** (authored content):
 
-- `<p>` paragraphs of any kind — except the single `<p>` inside the
-  Design References sub-block.
+- `<p>` paragraphs of any kind — including any `Design References` /
+  Figma / Sketch block (globally excluded per §11.0).
 - `<ul>` / `<ol>` / `<li>` lists.
 - `<table>` of any kind.
 - Heading levels other than `<h6>` (no `<h4>`, `<h5>`, `<h3>`).

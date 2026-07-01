@@ -222,7 +222,7 @@ The routine implementation lives in `SKILL.md` §5-C.4.
 - User Interfaces should always be included at the end of the specifications document.
 - Each system screenshot must be placed immediately after the corresponding screen name.
 - The screen name should be in a tiny header format for consistency.
-- **The UI section is a gallery, not a narrative.** It contains only screen name + screenshot pairs (and an optional Design References sub-block at the end for Figma / Sketch / external design-tool links).
+- **The UI section is a gallery, not a narrative.** It contains only screen name + screenshot pairs. Design-tool references (Figma / Sketch / InVision / external design-tool links) are globally excluded and MUST NOT be added — no Design References sub-block (see `release-filter-policy.md` §11.0).
 - **No paragraph descriptions, captions, or narrative text inside the UI section.** Do not write what a screen does between the screen name and the image, or between consecutive entries. If a behaviour explanation is needed, it belongs as a bullet in the **Scenario** column of the corresponding **Acceptance Test Cases** row (per §2.4), not in the UI section.
 - The **screen name (UI topic)** is a short noun-phrase label that names the screen — e.g. `Salary History`, `Pay Grade Configuration`, `Add Employee Wizard — Salary`. **Never** a sentence or description. Source priority for the topic name (from Jira, in order):
     1. Heading text immediately preceding the image in the Jira description (preferred).
