@@ -694,8 +694,10 @@ For each scope grouped at this destination:
 
 Per `release-filter-policy.md` §11.1:
 
-1. Extract image attachments + embedded image URLs + design-tool URLs
-   from each scope's evidence.
+1. Extract image attachments + embedded image URLs from each scope's
+   evidence. **Design-tool URLs (Figma / Sketch / etc.) are IGNORED per
+   `release-filter-policy.md` §11.0 — never extracted, linked, or
+   rendered.**
 2. Re-host every Jira attachment binary on BookStack via the
    curl → multipart POST → delete-temp pipeline. **NEVER use the Read
    tool on the downloaded binary.** **NEVER link Atlassian URLs
@@ -709,9 +711,10 @@ Per `release-filter-policy.md` §11.1:
    title-cased → cleaned issue summary → `Untitled UI <n>` (with
    validation_warning).
 5. The UI section is a **gallery-only** block. Forbidden inside it:
-   `<p>` (except the optional Design References sub-block), `<ul>`,
-   `<ol>`, `<li>`, `<table>`, any heading level other than `<h6>`,
-   narrative connective text. See `release-filter-policy.md §11.1-bis`.
+   `<p>` of ANY kind (including any Design References / Figma / Sketch
+   sub-block — globally excluded per §11.0), `<ul>`, `<ol>`, `<li>`,
+   `<table>`, any heading level other than `<h6>`, narrative connective
+   text. See `release-filter-policy.md §11.0 / §11.1-bis`.
 
 ### 5-E. Assemble `NEW_HTML` per destination
 
@@ -739,7 +742,7 @@ here for completeness because CS does not load SKILL.md):
 | 4 | ATC key uniqueness per destination | No Jira key appears in more than one ATC row's key list **on the same destination page** (a key may appear once on Leave's page and once on Attendance's page — that is the cross-product split). |
 | 5 | Non-ATC tables link to ATC | Every authored non-ATC row's leftmost cell ends with `(ATC #<n>)`. |
 | 6 | No invented headings | Routine authored ZERO `<h2>`/`<h3>`/`<h4>`/`<h5>` outside the single `<h2>User Interfaces (UIs)</h2>` and `<h6>` entries inside the UI section. **Forbidden headings (verbatim, this list overrides any general intuition):** `Overview`, `Business Requirement`, `Expected System Behavior`, `Rules / Validations`, `User Stories`, `Notes / Dependencies / Limitations`, `Customer Specific`, `CS Feature`, `CS-Specific`, `Release`, `Fix Version`, `Pilot`, `Change Log`, `Migration Notes`, `Implementation Notes`, internal project names, any `<h2>{fixVersion}</h2>`. |
-| 7 | UI section position + shape | `<h2>User Interfaces (UIs)</h2>` is LAST in the page body. Its content is strictly `<h6>{topic}</h6>` immediately followed by `<a><img></a>` — no `<p>`/`<ul>`/`<ol>`/`<li>`/`<table>` except the canonical Design References sub-block. Topic name ≤ 6 words, no sentence punctuation. |
+| 7 | UI section position + shape | `<h2>User Interfaces (UIs)</h2>` is LAST in the page body. Its content is strictly `<h6>{topic}</h6>` immediately followed by `<a><img></a>` — no `<p>`/`<ul>`/`<ol>`/`<li>`/`<table>` of any kind. Any `Design References` / design-tool link is a FAIL and must be removed (globally excluded per `release-filter-policy.md` §11.0). Topic name ≤ 6 words, no sentence punctuation. |
 | 8 | Form table sanity | Every Form-table data row has exactly **6 `<td>` cells** in the canonical order. Empty cells use `—`. NO `<img>` in any cell. NO `Save`/`Cancel` row. NO `<ul>`/`<ol>`/`<li>` in Validation(s) or Validation Message(s) cells — those use `-`-prefixed plain-text lines per the §2.4 Form note. |
 | 9 | Structural preservation + evidence-gated CRUD (`release-filter-policy.md` §10.4) | Every `<h2>` / `<h3>` / `<h4>` / `<h5>` / `<h6>` text in `PRIOR_HTML` is still present in `NEW_HTML`, and no whole canonical table or the UI section was deleted (structural floor). Row / bullet / cell content MAY be removed or replaced — but ONLY via an evidence-gated §10.4 op-4 supersession the audit log records with a `Removed - …` / `Updated - … <old> → <new>` line citing the driving `HT-` key. FAIL if a heading/table/UI-section disappeared, OR if any row/bullet/cell was removed/replaced with no matching evidence-gated log line (silent shrink). |
 | 9-ORPH | No orphaned ATC back-references after removal | After any §10.4 row-level removal, every `(ATC #<n>)` in every non-ATC row still points at an existing ATC `#` in `NEW_HTML`, and ATC `#`s are contiguous from 1. FAIL on a dangling reference or numbering gap. |

@@ -216,19 +216,35 @@ or to fall back to in-prompt heuristics.
 
 **Authoritative reference: `release-filter-policy.md` §1–§6.**
 
-### 3-A. Fetch the configured fixVersion from Jira
+### 3-A. Fetch the configured fixVersion(s) from Jira
 
-Use the Atlassian MCP to get the version object. Two equivalent paths:
+**`RELEASE_SCOPE` may be (a) a single version string, (b) a JSON array of
+versions, or (c) the dynamic keyword `"all-released"`** (per
+`release-filter-policy.md` §1). Treat a bare string as a one-element set.
+
+- **Modes (a)/(b) — pinned set:** the set is exactly the configured
+  version(s).
+- **Mode (c) — `"all-released"` (dynamic):** first **enumerate every
+  fixVersion in the project** (project-versions endpoint, paginate to
+  completion, ignore `archived==true`). The candidate set is all of them;
+  the §2–§6 gate below then keeps only the released ones. This is what lets
+  the routine cover **all released release-lines** (e.g. every released
+  Epic's fixVersion) without a config change when a new line ships. It ties
+  into the §15 per-Epic scan — the versions that scan marks Released are
+  exactly the ones that survive the gate here.
+
+For **each** candidate version `V`, use the Atlassian MCP to get its version
+object. Two equivalent paths:
 
 - **Preferred:** call `getVisibleJiraProjects` / project-versions endpoint
-  to list versions, then pick the one whose `name == RELEASE_SCOPE`.
+  to list versions, then pick the one whose `name == V`.
 - **Fallback:** call `searchJiraIssuesUsingJql` with
-  `project = <KEY> AND fixVersion = "<RELEASE_SCOPE>"` requesting
+  `project = <KEY> AND fixVersion = "<V>"` requesting
   `fields=["fixVersions"]`, then inspect any returned issue's
-  `fixVersions[]` for the entry whose `name == RELEASE_SCOPE`.
+  `fixVersions[]` for the entry whose `name == V`.
 
-If the version object cannot be located → abort
-`status=BLOCKED reason='configured fixVersion <RELEASE_SCOPE> not found in
+If a configured version object cannot be located → abort
+`status=BLOCKED reason='configured fixVersion <V> not found in
 project <KEY>'`. Record `Manual action required: create or rename the
 fixVersion in Jira.`
 
@@ -244,15 +260,27 @@ OHRM routines today; compute from UTC fire time + offset).
 | `false` | `> TODAY` | **NOT YET** | `status=SKIPPED reason='fixVersion not released yet'`, log `Skipped - Configured fixVersion <V> for project <K> is not released yet because Jira releaseDate is in the future.` — proceed to STEP 8 (AUDIT) + STEP 9 (log) + STEP 10 (email), skip STEP 4–STEP 7. |
 | `false` | empty/null/missing | **BLOCKED** | `status=BLOCKED reason='fixVersion not confirmed released'`, log `Blocked - Configured fixVersion <V> for project <K> is not confirmed as released in Jira because released=false and releaseDate is empty. Release Manager or Project Admin must either mark the version as released or set a valid releaseDate in Jira.` — same: proceed to STEP 8/9/10 only. |
 
-On NOT YET / BLOCKED outcomes, record the verbatim log line as a single
-entry in the run log's `release_gate` field (see §STEP 9). The audit email
-will surface this so the Release Manager sees it.
+**Apply this table per candidate version.** `CONFIRMED_VERSIONS` = every
+version whose outcome is CONFIRMED. A NOT_YET / BLOCKED version records its
+own verbatim log line but does NOT block the others. If
+`CONFIRMED_VERSIONS` is empty, set the aggregate `release_gate` to the
+worst per-version outcome (BLOCKED > NOT_YET), skip STEP 4–STEP 7, and
+proceed to STEP 8/9/10. On NOT YET / BLOCKED outcomes, record the verbatim
+log line(s) in the run log's `release_gate` field (see §STEP 9). The audit
+email surfaces these so the Release Manager sees them.
 
-### 3-C. On CONFIRMED — query stories
+### 3-C. On ≥1 CONFIRMED — query stories
+
+Query the union of confirmed versions:
 
 ```jql
-project = <JIRA_PROJECT_KEY> AND fixVersion = "<RELEASE_SCOPE>"
+project = <JIRA_PROJECT_KEY> AND fixVersion in ("<V1>", "<V2>", ...)
 ```
+
+(For a one-element `CONFIRMED_VERSIONS` this is equivalent to
+`fixVersion = "<V1>"`.) Do **not** use the JQL `releasedVersions()`
+function — it keys off the `released` flag only and would miss versions
+that are released by past `releaseDate` with `released==false` (§6).
 
 Fetch with `fields = ["summary","description","status","issuetype",
 "resolution","labels","fixVersions","attachment","comment","priority",
@@ -960,8 +988,9 @@ commits / PR review.
 1. **Extract** UI assets from each story `S`:
    - Attachments with image MIME or image extension.
    - Embedded image URLs in description / confirmed-final comments.
-   - Design-tool URLs (Figma / Sketch / etc.) as `<a>` links — not
-     `<img>`.
+   - Design-tool URLs (Figma / Sketch / etc.) → **IGNORED** per
+     `release-filter-policy.md` §11.0 (never extracted, linked, or
+     rendered — globally out of wiki scope for all projects).
 
 2. **Re-host every Jira image binary on BookStack** (MANDATORY — never
    link Atlassian URLs directly in `<img>` / `<a>` tags):
@@ -1024,7 +1053,9 @@ commits / PR review.
 
 3. **Parse `UI_SECTION`** (if it exists) into a map
    `WIKI_UIS = { lowercase_filename → (h6_text, href_url, img_src) }`.
-   For design-tool links, key by `host + path` instead of filename.
+   If a prior run left a `Design References` sub-block or any design-tool
+   link, mark it for **removal** per §11.0 (§10.4 op-4) — it is no longer
+   permitted.
 
 4. **For each Jira UI asset** (filename `fn`, BookStack url
    `bs_url` from step 2, BookStack thumb `bs_thumb`, screen name
@@ -1052,9 +1083,10 @@ commits / PR review.
    ```
    followed by the new `<h6>` + `<a><img>` entries.
 
-7. **Design-tool URLs** go in a final `<h6>Design References</h6>`
-   sub-block inside `UI_SECTION` (see `WIKI_PAGE_RENDER.md` §3.1). No
-   upload step — these are external links, not images.
+7. **Design-tool URLs are EXCLUDED (§11.0).** Never author a
+   `<h6>Design References</h6>` sub-block or any Figma / Sketch link. If a
+   prior run wrote one, remove it (step 3) and log `Removed - design-tool
+   reference(s) — out of global spec scope per §11.0`.
 
 8. **No per-story UI heading is ever emitted.** All UIs live in the
    one global UI section at the end of the page.
@@ -1119,7 +1151,7 @@ the write.
 | 5 | **Non-ATC tables link to ATC** | Every authored non-ATC row's leftmost cell ends with `(ATC #<n>)` referencing an existing ATC row. The Jira-key list (if present) follows the `(ATC #<n>)` suffix in a second parenthetical group. |
 | 2-HDR | **Canonical section heading present above each authored table** | Every canonical table in `NEW_HTML` is immediately preceded by its canonical section heading per `WIKI_PAGE_RENDER.md` §1.1: `<h3>Acceptance Test Cases</h3>` before ATC, `<h3>List</h3>` before List, `<h3>Search</h3>` before Search, `<h3>Form</h3>` before Form, `<h3>Audit Trail</h3>` before Audit Trail, and `<h2>User Interfaces (UIs)</h2>` before the UI gallery. FAIL if a table is present but its heading is missing, its heading text differs (e.g. `<h3>ATC</h3>` / `<h3>Acceptance Tests</h3>` / `<h3>Acceptance Test Cases (HT-965)</h3>` — appending a key list is forbidden, the heading is generic), the heading level is wrong (`<h2>Form</h2>`, `<h4>Form</h4>`), or there is intervening content (a `<p>` / image / divider) between the heading and its `<table>`. Applies to **every routine in this repo** (CM, PNP, Roster, Orange Sign, the dynamic CS routine, and any future routine inheriting STEP 6). |
 | 6 | **No invented headings authored** | The routine authored ZERO new `<h2>` / `<h3>` / `<h4>` / `<h5>` outside the single `<h2>User Interfaces (UIs)</h2>`, the five canonical `<h3>` table-section headings from check #2-HDR, and `<h6>` entries inside the UI section. Forbidden authored headings include but are not limited to: `Overview`, `Business Requirement`, `Expected System Behavior`, `Rules / Validations`, `User Stories`, `Acceptance Criteria` (as a heading — the table is the AC), `Interfaces (UIs)` as `<h3>`/`<h4>`, `Notes / Dependencies / Limitations`, `<h2>{fixVersion}</h2>`, `Pilot`, `Pilot Releases`, `Issues Affecting Scope`, `Migration Notes`, `Change Log`, `Implementation Notes`, internal project names. |
-| 7 | **UI section position and shape (gallery-only — `release-filter-policy.md` §11.1-bis)** | If a UI section is authored, it is `<h2>User Interfaces (UIs)</h2>` (case-insensitive), positioned LAST in the page body. Its content is **strictly** `<h6>{Topic Name}</h6>` immediately followed by `<a href><img></a>` — one h6+image pair per UI screen, in that order. **FAIL conditions:** (a) any `<p>` / `<ul>` / `<ol>` / `<li>` / `<table>` inside the UI section EXCEPT the canonical Design References sub-block (one `<p><strong>Figma:</strong> <a>...</a></p>` at the end). (b) Any `<h6>` not immediately followed by `<a><img></a>`. (c) Any `<a><img></a>` without a preceding `<h6>` topic name (orphan image). (d) Topic name reads as a sentence/description — contains period+space, exceeds 6 words, or starts with `The `/`This `/`When `/`A `. (e) Heading level inside the UI section is anything other than `<h6>` (no `<h4>`/`<h5>`/`<h3>` captions, no inline `<strong>UI:</strong>` labels). Topic name MUST be a short noun-phrase label (`Salary History`, `Pay Grade Configuration`), taken from Jira per the §11.1-ter source priority. |
+| 7 | **UI section position and shape (gallery-only — `release-filter-policy.md` §11.1-bis)** | If a UI section is authored, it is `<h2>User Interfaces (UIs)</h2>` (case-insensitive), positioned LAST in the page body. Its content is **strictly** `<h6>{Topic Name}</h6>` immediately followed by `<a href><img></a>` — one h6+image pair per UI screen, in that order. **FAIL conditions:** (a) ANY `<p>` / `<ul>` / `<ol>` / `<li>` / `<table>` inside the UI section — including any `Design References` / Figma / Sketch sub-block, which is globally forbidden per `release-filter-policy.md` §11.0 (a surviving design-tool link is itself a FAIL and must be removed). (b) Any `<h6>` not immediately followed by `<a><img></a>`. (c) Any `<a><img></a>` without a preceding `<h6>` topic name (orphan image). (d) Topic name reads as a sentence/description — contains period+space, exceeds 6 words, or starts with `The `/`This `/`When `/`A `. (e) Heading level inside the UI section is anything other than `<h6>` (no `<h4>`/`<h5>`/`<h3>` captions, no inline `<strong>UI:</strong>` labels). Topic name MUST be a short noun-phrase label (`Salary History`, `Pay Grade Configuration`), taken from Jira per the §11.1-ter source priority. |
 | 8 | **Form table sanity — strict 6-cell row alignment** | Every Form-table data row has **exactly 6 `<td>` cells** in the canonical column order: (1) Field Name, (2) Type, (3) Default Value, (4) Validation(s), (5) Validation Message(s), (6) Field Behavior. FAIL conditions: (a) a row has fewer or more than 6 `<td>` cells (a 5-cell row visually collapses one header and slides every cell after it into the wrong column — the symptom the spec author reported on 2026-05-18 where `Field Behavior` content appeared under the `Validation Message(s)` header); (b) any cell renders as truly empty `<td></td>` — empty cells MUST contain `—` (em-dash, U+2014) so the column structure visibly persists across rows regardless of content; (c) `<img>` inside any `<td>`; (d) any `Save` / `Cancel` row (per `specification-writing-guideline.md` §2.4 Form note); (e) `<ul>` / `<ol>` / `<li>` inside the Validation(s) or Validation Message(s) cells — multi-validation lines use `-` (hyphen + space) prefix per the §2.4 Form note; (f) content positionally misaligned to its header (e.g. a validation rule sitting in the Field Behavior cell, or vice versa). |
 | 9 | **Structural preservation + evidence-gated CRUD (`release-filter-policy.md` §10.4)** | Every `<h2>`, `<h3>`, `<h4>`, `<h5>`, `<h6>` text present in `PRIOR_HTML` is still present in `NEW_HTML`, and no whole canonical table or the UI section was deleted (the structural floor). **Row / bullet / cell content MAY be removed or replaced** relative to `PRIOR_HTML` — but ONLY via an evidence-gated §10.4 op-4 supersession that the run log records with a `Removed - …` / `Updated - … <old> → <new>` line citing the driving `<KEY>`. FAIL if a heading, whole table, or the UI section disappeared, OR if any row/bullet/cell content was removed/replaced without a matching evidence-gated log line (silent shrink — absence is never removal). |
 | 9-ORPH | **No orphaned ATC back-references after removal** | After any §10.4 row-level removal, every `(ATC #<n>)` back-reference in every non-ATC row still points at an existing ATC `#` in `NEW_HTML`, and ATC `#`s are contiguous from 1. FAIL if a removed ATC row left a dangling `(ATC #<n>)` or a numbering gap. |

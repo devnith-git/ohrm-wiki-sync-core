@@ -32,13 +32,49 @@ story is released.)
 
 Each routine must have a configured Jira `fixVersion` scope.
 
-Examples (current production values):
-- CM routine     → configured `fixVersion`: **8.0**
-- PNP routine    → configured `fixVersion`: **8.0.2**
-- Roster routine → configured `fixVersion`: **8.1**
+`release_scope` has **three allowed shapes** (one canonical field — these
+are distinct modes, **not** alias/fallback spellings of the same thing):
 
-The routine must only check Jira stories linked to its configured
-`fixVersion`. If a story is not linked to the configured `fixVersion`,
+1. **Single version string** (e.g. `"8.0"`) — the scope is exactly that
+   version. Behaves as a one-element set.
+2. **JSON array of versions** (e.g. `["8.0.2", "8.1"]`) — the scope is
+   exactly that pinned set of versions.
+3. **The dynamic keyword `"all-released"`** — the scope is **every
+   fixVersion in the project that is currently released**. At runtime the
+   routine enumerates all project fixVersions (ignoring `archived==true`),
+   applies the §2–§6 gate to each, and takes every version that passes.
+   This is the mode for routines that must track **all released
+   release-lines** of a project (so a newly-shipped line is picked up
+   automatically, with **no config change**). It is the recommended mode
+   when a project's spec page is the single cumulative home for the whole
+   module.
+
+**Common rule for every shape — the candidate versions form a set, and the
+release-confirmation gate (§2–§6) is applied independently to each:**
+- Only versions that PASS the gate (§5 released flag, or §6 past
+  releaseDate) contribute stories. A version that fails the gate
+  (future §4 / unconfirmed §3) is skipped/blocked with its **own** verbatim
+  §3/§4 log line but does **not** block the other versions.
+- The story query unions the confirmed versions:
+  `project = <KEY> AND fixVersion in (<confirmed versions>)`. Do **not**
+  use the JQL `releasedVersions()` function — it keys off the `released`
+  flag only and misses §6 versions (`released==false` + past
+  `releaseDate`).
+- If **no** candidate version passes the gate, the routine records the
+  aggregate SKIPPED/BLOCKED outcome (skip STEP 4–7) but STILL runs the
+  §15 per-Epic scan + the run log + email.
+- **Tie-in to §15:** under `"all-released"`, the versions that pass this
+  gate are exactly the fixVersions the §15 per-Epic scan classifies
+  **Released** — the Epic scan and the story scope stay consistent.
+
+Examples (current production values):
+- CM routine     → `release_scope`: **8.0**
+- PNP routine    → `release_scope`: **"all-released"** (all released PNP
+  lines — 8.0.2, 8.1, 8.1.1 today; auto-extends to future released lines)
+- Roster routine → `release_scope`: **8.1**
+
+The routine must only check Jira stories linked to a configured in-scope
+`fixVersion`. If a story is not linked to any version in `release_scope`,
 skip it.
 
 **Log:**
@@ -191,6 +227,70 @@ classifies it into one of three buckets:
 Excluded - <KEY> is a <Type>; issue type not in spec coverage scope.
 ```
 
+## 8.5 Global Topic Exclusion — Usage / Telemetry Metrics (every routine, every project)
+
+**Universal — applies to every routine globally (CM, PNP, Roster, Orange
+Sign, CS Features, and every current or future Jira-to-wiki routine). No
+project may opt in to including these.**
+
+Feature-usage / telemetry / analytics-instrumentation issues describe
+**internal product-usage measurement**, not user-facing specifiable
+behaviour. They are OUT of specification scope everywhere and MUST NOT be
+written to any wiki page — regardless of issue type, `fixVersion`, or
+completion status. This exclusion is evaluated **before** §8 issue-type and
+§9 resolution/label checks; a matching issue is dropped even if it is a
+Story/Task in a released, completed state.
+
+An issue is a **usage/telemetry-metrics issue** when ANY of the following
+hold (case-insensitive, on summary + description):
+- The issue centres on **feature usage metrics**, **usage statistics**,
+  **telemetry**, **analytics events**, **Elastic Search stats / ES support
+  for metrics**, **event counters**, or **product-usage dashboards /
+  reporting of counts**.
+- Its content is essentially a **list of metrics / counters to emit**
+  (e.g. "Review Templates Created", "Started Reviews", event counts)
+  rather than a description of user-facing screens, forms, fields,
+  list/search behaviour, or auditable actions.
+- Trigger tokens (non-exhaustive): `feature usage metrics`, `usage metrics`,
+  `usage stats`, `usage statistics`, `telemetry`, `elastic search support`
+  (in a metrics/stats context), `event tracking`, `analytics event`,
+  `metrics instrumentation`.
+
+**Negative guard.** An issue is NOT excluded merely for mentioning "search"
+or "Elastic Search" as a **user-facing** capability (e.g. searching or
+filtering a list the user interacts with). The exclusion targets
+**instrumentation of usage metrics**, not user-facing search. When a story
+describes a screen / field / filter the user interacts with, it stays in
+scope even if Elastic Search powers it under the hood.
+
+**Effect:**
+- **Never processed / never written.** Counted in the run log under a new
+  `usage_metrics_excluded` counter with the verbatim per-issue log line
+  below, and surfaced in the email's excluded tally. No ATC / List /
+  Search / Form / Audit Trail / UI content is authored for it.
+- **Removal of previously-written usage-metrics content (evidence = this
+  policy).** If a prior run wrote content for an issue that now classifies
+  as usage/telemetry metrics, the current run MUST remove that content per
+  the §10.4 op-4 removal mechanics (row + dependent-row cascade +
+  renumber), logging `Removed - usage/telemetry-metrics content for <KEY>
+  — out of global spec scope per §8.5`. This is the one removal whose
+  evidence is the **policy classification itself**, not a Jira supersession
+  phrase.
+
+**Log (per issue excluded as usage/telemetry metrics):**
+```
+Excluded - <KEY> is a usage/telemetry-metrics issue (feature usage metrics /
+analytics instrumentation); out of global specification scope per §8.5.
+```
+
+**Currently-known match:** `PNP-48` ("Feature Usage Metrics | Elastic Search
+Support - Pilot 1") — its description is a pure list of usage counters
+(Review Templates Created/Used, Started Reviews, …). It is excluded here and,
+if a prior PNP run wrote it to the Performance Core page, removed on the next
+successful run.
+
+---
+
 ## 9. Exclusion Check (resolution / status / labels)
 
 For any issue that passed §8 (Epic/Story/Task), still skip it if it is
@@ -223,8 +323,9 @@ Skipped - Story is excluded from release scope.
 The routine should process an issue only when **all** of the following
 are true:
 
-1. The issue belongs to the configured Jira `fixVersion`.
-2. Jira confirms the `fixVersion` as released using `released==true` or
+1. The issue belongs to a configured in-scope Jira `fixVersion` (any
+   version in `release_scope`, per §1).
+2. Jira confirms that `fixVersion` as released using `released==true` or
    `releaseDate` today/in the past.
 3. The issue type is in scope (per §8: Epic / Story / Task).
 4. The issue is completed (`statusCategory.key == "done"` or a
@@ -233,6 +334,7 @@ are true:
    (per §9).
 6. The issue has enough Jira information to update the specification
    (description is not empty AND not solely an external Drive/Figma link).
+7. The issue is **not** a usage/telemetry-metrics issue (per §8.5).
 
 ---
 
@@ -617,6 +719,34 @@ specifications document. Each screenshot is placed immediately after
 its corresponding screen name, with the screen name in tiny-header
 format (`<h6>`).**
 
+### 11.0 Global exclusion — design-tool references are NEVER synced (every routine, every project)
+
+**Universal — applies to every routine globally. No project may opt in.**
+
+Design-tool references — links to **Figma, Sketch, InVision, Miro,
+Whimsical, Excalidraw, Marvel, Adobe XD, Zeplin**, or any similar design
+/ prototyping tool — are **out of scope for the wiki** and MUST NOT be
+added to any page. The wiki spec documents the shipped product (canonical
+tables + rendered screenshots), not internal design assets. Concretely:
+
+- The routine does **not** extract, upload, link, or render design-tool
+  URLs found in Jira descriptions / comments / attachments.
+- The routine **never** authors a `Design References` sub-block (or any
+  `<h6>Design References</h6>` / Figma/Sketch link list) in the UI section
+  or anywhere else.
+- **Rendered screenshots still apply.** An actual image (PNG/JPG/etc.)
+  attached to or embedded in Jira is still uploaded to BookStack and shown
+  per §11.1 — the exclusion is specifically the **design-tool link**, not a
+  real screenshot the user will see.
+- **Removal (evidence = this policy).** If a prior run wrote a Design
+  References block or a design-tool link, the current run removes it per
+  §10.4 op-4, logging `Removed - design-tool reference(s) — out of global
+  spec scope per §11.0`.
+
+Everything below in §11.1 that describes handling design-tool URLs as
+`<a>` links or a Design References sub-block is **superseded by this
+subsection** and is retained only to describe what to strip on cleanup.
+
 The routine maintains a single global UI section on the page:
 
 ```html
@@ -641,7 +771,8 @@ exists, the routine merges into it per §11.1.
   `media` nodes, markdown `![]()` patterns).
 - URLs in the description / comments matching Figma / InVision /
   Sketch / Miro / Whimsical / Excalidraw / Marvel / Adobe-XD / Zeplin
-  domains (these are LINKS — `<a>` only, no `<img>`).
+  domains → **IGNORED per §11.0** (design-tool references are never added
+  to the wiki; do not extract, link, or render them).
 
 **Upload to BookStack (MANDATORY — never link Atlassian URLs directly).**
 
@@ -739,9 +870,10 @@ Embedded `<img>` tags inside the Jira description (ADF `media` nodes)
 follow the same rule: extract the underlying binary, upload to
 BookStack, use the BookStack URL.
 
-Design-tool URLs (Figma / InVision / Sketch / etc.) are NOT uploaded —
-they remain external links rendered as `<a href>` only. Those don't
-have an `<img>` to break.
+Design-tool URLs (Figma / InVision / Sketch / etc.) are **IGNORED per
+§11.0** — never uploaded, never rendered as `<a href>`, never added to
+the page in any form. (They are not images, so there is no `<img>` to
+break; they are simply out of scope for the wiki.)
 
 Derive a **screen name** per UI asset (used as the `<h6>` text):
 1. The heading text immediately preceding the image in the Jira
@@ -775,19 +907,10 @@ Deduplicate within a single Jira story: if the same filename appears
 twice (e.g. once in the description and once as an attachment), emit
 one entry.
 
-**Design-tool URLs** (Figma / Sketch / etc.) — these are external
-links, not images. Render them as a final sub-block inside the UI
-section:
-
-```html
-<h6>Design References</h6>
-<p>
-  <strong>Figma:</strong> <a href="{URL}">{label}</a><br>
-  <strong>Sketch:</strong> <a href="{URL}">{label}</a><br>
-</p>
-```
-
-Same compare-and-merge rules as for images, matched on URL host + path.
+**Design-tool URLs** (Figma / Sketch / etc.) — **NOT rendered. Excluded
+per §11.0.** The routine never authors a `Design References` sub-block. If
+one exists from a prior run, remove it (§10.4 op-4) and log
+`Removed - design-tool reference(s) — out of global spec scope per §11.0`.
 
 ### 11.1-bis UI section purity — h6+image pairs ONLY
 
@@ -799,19 +922,16 @@ contains **strictly** the following two patterns, repeated per UI:
 <a href="{BS_FULL_URL}"><img src="{BS_THUMB_URL}" alt="{Topic Name}"></a>
 ```
 
-Plus an optional Design References sub-block at the very end:
-
-```html
-<h6>Design References</h6>
-<p><strong>Figma:</strong> <a href="{URL}">{label}</a><br>
-   <strong>Sketch:</strong> <a href="{URL}">{label}</a></p>
-```
+**No Design References sub-block** — design-tool links are globally
+excluded per §11.0. The UI section contains ONLY the `<h6>` + image
+pattern above; nothing else.
 
 **Forbidden inside the UI section** (the routine MUST NOT author any of
 these — STEP 6 check #7 enforces it):
 
-- `<p>` paragraphs (captions, descriptions, lead text, transitions) —
-  **except** the single `<p>` inside the Design References sub-block.
+- `<p>` paragraphs of ANY kind (captions, descriptions, lead text,
+  transitions, Design References) — the UI section has NO `<p>` at all
+  (the Design References sub-block is forbidden per §11.0).
 - `<ul>` / `<ol>` / `<li>` lists of any kind.
 - `<table>` of any kind.
 - Heading-level captions other than `<h6>` (no `<h4>`, `<h5>`, no

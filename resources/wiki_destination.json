@@ -2110,10 +2110,10 @@
       "book_name": "Performance",
       "chapter_id": 0,
       "chapter_name": "",
-      "release_scope": "8.0.2",
+      "release_scope": "all-released",
       "jira_project_key": "PNP",
       "epic_filter": null,
-      "last_verified": "2026-06-29T00:00:00Z",
+      "last_verified": "2026-07-01T00:00:00Z",
       "last_synced_at": "2026-06-13T214513Z"
     },
     "roster_daily_sync": {
