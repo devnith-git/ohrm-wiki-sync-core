@@ -379,17 +379,15 @@ file). If none qualify, the default exclusion applies. This applies to
 **every routine** in this repo — CM, PNP, Roster, Orange Sign, and the
 dynamic CS routine alike.
 
-### 4-A. Completion check (`release-filter-policy.md §7`)
+### 4-A. Story status is NOT a gate (`release-filter-policy.md §7`)
 
-Run only for issues that passed 4-A.0 (Epic / Story / Task).
-
-Eligible iff `statusCategory.key == "done"` OR `status.name` is one of
-`Done | Closed | Completed | Released | CPO/PM Accepted`.
-
-If not eligible → record per-issue log
-`Skipped - Story is linked to a released fixVersion, but the story itself
-is not completed.` and skip to next issue. Increment the type-specific
-`*_skipped` counter.
+Per the §7 fixVersion-priority rule, the routine does **NOT** check a
+story's workflow status. Any Epic / Story / Task that passed 4-A.0 and is
+attached to a released `fixVersion` (STEP 3) proceeds — `New`,
+`In Progress`, `Done`, `Closed`, `CPO/PM Accepted` all qualify. There is
+no completion skip here; the only per-issue filters are 4-B (exclusion),
+the §8.5 usage/telemetry-metrics exclusion, and the source-material
+sanity gate.
 
 ### 4-B. Exclusion check (`release-filter-policy.md §9`)
 

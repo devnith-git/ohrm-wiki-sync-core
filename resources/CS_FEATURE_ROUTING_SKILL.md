@@ -322,8 +322,9 @@ Run the standard buckets from `release-filter-policy.md` §7 / §8 / §9
      deprioritized. Log `Excluded - <KEY> Bug passed; not a requirement
      change (no Type-Of-Defect=Requirement, no [Requirement] prefix, no
      qualifying comment).` so every Bug's record-vs-pass verdict is visible.
-2. **Completion check** (§7) — `statusCategory.key == "done"` or
-   `status.name in {Done, Closed, Completed, Released, CPO/PM Accepted}`.
+2. **Story status is NOT a gate** (§7 fixVersion-priority rule) — do not
+   skip an issue for being incomplete; a Story/Task on a released
+   `fixVersion` qualifies regardless of workflow status.
 3. **Exclusion check** (§9) — resolution / status / labels match any of
    `deferred`, `cancelled`, `rejected`, `removed-from-scope`, `dropped`,
    `duplicate`, `wont-do`, `won't do`, `moved`, `not-applicable`, `na`.

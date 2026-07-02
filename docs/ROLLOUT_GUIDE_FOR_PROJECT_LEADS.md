@@ -21,7 +21,7 @@ Specification documents drift away from product reality the moment they're hand-
 - The email report tells PLs exactly which stories were updated, which were skipped (with reason), and which need manual action — so a PL can read one email after the fire and know what's done and what they still own.
 
 ### Why Jira is the source of truth
-The release gate is **Jira-only** (`release-filter-policy.md` §1–§9). The routine never consults the wiki, BookStack revision history, or any external system to decide whether a story is released. Jira's `fixVersion.released` flag (or a past `releaseDate`) is the authoritative signal. Story completion is decided by `statusCategory.key == "done"` (or one of the canonical "completed" status names: Done / Closed / Completed / Released). Anything else is a source of drift and is explicitly rejected.
+The release gate is **Jira-only** (`release-filter-policy.md` §1–§9). The routine never consults the wiki, BookStack revision history, or any external system to decide whether a story is released. Jira's `fixVersion.released` flag (or a past `releaseDate`) is the authoritative signal. Per the §7 fixVersion-priority rule the routine does **NOT** gate on a story's own workflow status — a Story/Task on a released `fixVersion` is in scope whether New / In Progress / Done.
 
 ### Why released/completed stories — not ongoing ones
 A spec is a record of what the system **does**, not what it **might do**. Routine processing of ongoing stories would write speculative content that the spec author would then have to revert when the story scope changes mid-development. Released-only filtering means: the spec is always behind the latest commit (intentionally) but always ahead of the previous release.
@@ -277,7 +277,7 @@ Before a PL runs the routine, the following must be true:
 - **Acceptance criteria** are available either inline in the description or in a confirmed-final Jira comment ("Confirmed by PL", "Final per design review", etc.).
 - **fixVersion is assigned** to the story.
 - **fixVersion is released** — either `released=true` or `releaseDate` ≤ today in Asia/Colombo. The Release Manager owns this.
-- **Story status is completed** — Done, Closed, Completed, or Released (any of these — driven by `statusCategory.key == "done"`).
+- **Story status is NOT checked** — per §7 fixVersion-priority, a Story/Task on a released `fixVersion` is in scope regardless of workflow status (New / In Progress / Done).
 - **Story is not excluded** — no `deferred`, `cancelled`, `rejected`, `removed-from-scope`, `dropped`, `duplicate`, `wont-do`, `moved`, `not-applicable`, or `na` in the resolution, status name, or labels.
 - **UI assets** (screenshots, Figma links, mockups) are attached to the Jira story description or as Jira attachments **only if they should appear in the spec**.
 - **External Google Drive links are not the only source.** The routine never reads external docs (Jira is the only source of truth) — if the description points exclusively to a Drive doc, the routine BLOCKS the story.
@@ -316,7 +316,7 @@ A story is processed only if **all** of the following are true:
    - `fixVersion.released == true`, **OR**
    - `fixVersion.releaseDate` is today or in the past (Asia/Colombo timezone).
 3. The issue type is in scope — Epic / Story / Task (Epics are walked for their children, not rendered as ATC rows themselves).
-4. The issue is completed — `statusCategory.key == "done"` or a canonical completion status.
+4. (Story workflow status is not checked — §7 fixVersion-priority rule.)
 5. The issue is not excluded from scope (no `deferred` / `cancelled` / `rejected` / `removed-from-scope` / `dropped` / `duplicate` / `wont-do` / `moved` / `not-applicable` / `na` token in resolution / status / labels).
 6. The issue's description contains usable behaviour text (not empty, not only external links).
 
@@ -441,7 +441,7 @@ DRY_RUN mode is set via the DRY_RUN env var (set DRY_RUN=true in the routine Env
 ### What PLs MUST NOT do in the Instructions field
 
 - **Do not force unreleased stories.** Instructions cannot override the release gate; the routine reads Jira at fire time and applies §3-§6 of `release-filter-policy.md` regardless of what the Instructions say.
-- **Do not process ongoing stories.** The completion check (`statusCategory.key == "done"`) is non-overridable.
+- **Ongoing stories ARE processed.** Per §7 fixVersion-priority, story workflow status is not a gate — a released `fixVersion` is the authoritative signal, not the card's column.
 - **Do not ask the routine to use wiki release dates.** The Jira-only rule is policy. Any Instruction that says "use wiki dates" or "consult BookStack catalog" is ignored — the routine refuses.
 - **Do not duplicate Acceptance Test Case rows.** The dedup contract is enforced by STEP 6 check #12. Instructions saying "always add a new row" produce a STEP 6 BLOCKED status.
 - **Do not include broken Atlassian URLs as final UI references.** The routine won't, but Instructions saying "embed the Jira URL directly" are wrong — see §13.
@@ -671,7 +671,7 @@ log_html_url: https://github.com/<org>/<repo>/blob/main/logs/<slug>/<file>
 | `released=false` AND `releaseDate` empty | Skip all stories under this fixVersion; run STEP 3-D + email anyway | BLOCKED | `Blocked - Configured fixVersion <V> for project <K> is not confirmed as released in Jira because released=false and releaseDate is empty. Release Manager or Project Admin must either mark the version as released or set a valid releaseDate in Jira.` | Release Manager marks `released=true` OR sets a valid `releaseDate` |
 | `released=false` AND `releaseDate` in future | Skip all stories; run STEP 3-D + email anyway | SKIPPED | `Skipped - Configured fixVersion <V> for project <K> is not released yet because Jira releaseDate is in the future.` | None — routine resumes on next fire after `releaseDate` |
 | Story outside configured `release_scope` | Not returned by JQL — invisible to this fire | n/a | n/a | None (story belongs to a different release; will surface in that release's fire) |
-| Story status not completed | Skip per §7 | SKIPPED (per-story) | `Skipped - Story is linked to a released fixVersion, but the story itself is not completed.` | PL marks story Done in Jira when work is complete |
+| Story status not completed | **Processed anyway** (§7 fixVersion-priority — status is not a gate) | — | (no skip) | Ensure the story is correctly attached to the released `fixVersion`; workflow status no longer matters |
 | Story marked Deferred / Cancelled / Duplicate / Won't Do | Skip per §9 | SKIPPED (per-story) | `Skipped - Story is excluded from release scope.` | None — intentional exclusion. If the exclusion was a mistake, PL removes the exclusion label in Jira |
 | Story Done but description empty | Block per STEP 4-C | BLOCKED (per-story) | `Blocked - Jira description is empty. Add a textual description of the released behavior to the Jira ticket.` | PL adds description text in Jira |
 | Story description has only a Google Drive link | Block per STEP 4-C | BLOCKED (per-story) | `Blocked - Jira description has no extractable behavior text. Add a textual description of the released behavior to the Jira ticket.` | PL adds inline description text in Jira (the routine ignores external links — Jira is the only source) |

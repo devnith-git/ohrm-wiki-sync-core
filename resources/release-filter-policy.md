@@ -169,26 +169,27 @@ a releaseDate in the past or today.
 
 ---
 
-## 7. Story Completion Check
+## 7. Story Status — NOT a Gate (fixVersion-priority rule)
 
-Even if the `fixVersion` is confirmed as released, the routine must
-process only **completed** stories.
+**Global rule — every routine, every project.** The routine does **NOT**
+gate on a story's own workflow status. The **fixVersion release
+confirmation (§2–§6) is the authoritative temporal criterion**: if a
+Story / Task is attached to a `fixVersion` that passes the §2–§6 gate, it
+is in scope and is written to the specification **regardless of its own
+status** — `New`, `In Progress`, `Done`, `Closed`, `CPO/PM Accepted`, etc.
+all qualify.
 
-A story is eligible only if it is in a completed status such as:
-- Done
-- Closed
-- Completed
-- Released
+Rationale: a released `fixVersion` means that release line has shipped;
+Jira's release status **on the version** — not the individual card's
+workflow column — is the source of truth for what the release contains.
+Do **NOT** skip an issue for being "not completed" / "not done".
 
-Or if the Jira `statusCategory.key == "done"`.
-
-If the story is not completed, skip it.
-
-**Log (per-story):**
-```
-Skipped - Story is linked to a released fixVersion, but the story itself
-is not completed.
-```
+The prior completion gate (`statusCategory.key == "done"`) is **REMOVED**.
+The issue remains subject to the §8 issue-type filter, the §8.5
+usage/telemetry-metrics exclusion, the §9 explicit-exclusion check
+(deferred / cancelled / rejected / …), and the §10.5 comment
+deprioritization check — those stay in force. There is no longer a
+per-story "not completed" skip line.
 
 ---
 
@@ -328,8 +329,9 @@ are true:
 2. Jira confirms that `fixVersion` as released using `released==true` or
    `releaseDate` today/in the past.
 3. The issue type is in scope (per §8: Epic / Story / Task).
-4. The issue is completed (`statusCategory.key == "done"` or a
-   completed status name).
+4. (Story workflow status is **not** checked — per the §7 fixVersion-
+   priority rule; a Story/Task on a released `fixVersion` is in scope
+   whether New / In Progress / Done.)
 5. The issue is not excluded from scope by resolution / status / labels
    (per §9).
 6. The issue has enough Jira information to update the specification
