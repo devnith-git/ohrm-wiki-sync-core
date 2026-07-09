@@ -68,10 +68,10 @@ release-confirmation gate (§2–§6) is applied independently to each:**
   **Released** — the Epic scan and the story scope stay consistent.
 
 Examples (current production values):
-- CM routine     → `release_scope`: **8.0**
+- CM routine     -> `release_scope`: **"all-released"**
 - PNP routine    → `release_scope`: **"all-released"** (all released PNP
   lines — 8.0.2, 8.1, 8.1.1 today; auto-extends to future released lines)
-- Roster routine → `release_scope`: **8.1**
+- Roster routine -> `release_scope`: **"all-released"** (migrated from `__EPIC_ATOMIC__` 2026-07-09 for a uniform structure)
 
 The routine must only check Jira stories linked to a configured in-scope
 `fixVersion`. If a story is not linked to any version in `release_scope`,
@@ -1511,3 +1511,51 @@ de-duplication, STEP 6 validation, STEP 7 diff-aware write — is unchanged. Onl
 the *membership* of `ELIGIBLE_STORIES` changes. Writes remain additive and
 idempotent; an epic that later completes simply contributes its rows on the
 next run.
+
+---
+
+## 19. Document Release-Date Fallback (Jira-primary, document-secondary)
+
+**Status: GLOBAL — applies to every routine. Augments §2–§6.** Jira remains the
+PRIMARY release authority. This fallback is consulted ONLY to fill a gap where
+Jira lacks firm release data for an in-scope `fixVersion`. This is a deliberate,
+sanctioned exception to the "never consult an external source for release status"
+rail: it covers the controlled, in-repo enterprise release-notes document ONLY —
+the prohibition on using the **wiki / BookStack / wiki catalogs** for release
+status is unchanged.
+
+### 19.1 Source
+`_core/resources/OrangeHRM_Enterprise_Release_Notes.docx` (maintained manually,
+refreshed frequently), parsed by `_core/automation/release_doc_fallback.py`.
+Version headings are `X.Y.Z (YYYY-MM-DD)`. A placeholder date (e.g. `2026-06-xx`)
+is NOT firm and does NOT confirm release.
+
+### 19.2 Version-level fallback (authoritative — exact version match)
+When an in-scope `fixVersion` is unreleased in Jira and has no firm `releaseDate`
+(i.e. would be §3-BLOCKED or §4-SKIPPED with no date), look the version number up
+in the document. If the doc lists it with a firm `releaseDate <= today`, treat the
+version as **RELEASED** on that date with `release_source = doc`. Version numbers
+match exactly between Jira and the doc — no fuzzy logic. A Jira-confirmed release
+(§5/§6) always wins; the doc never overrides Jira where Jira has firm data.
+Log: `Release confirmed (source=doc) — fixVersion <V> dated <DATE> per release-notes document.`
+
+### 19.3 Story-level fallback (fuzzy, gated, WARN-by-default)
+For a Story/Task with NO `fixVersion` in Jira, the routine MAY infer a release by
+matching its summary+description keywords to the document's per-version feature
+text via `release_doc_fallback.match_story()`:
+- keyword-containment score **≥ 0.75** AND matched version is doc-released → apply
+  (`release_source = doc`; log the score + matched version).
+- otherwise → **WARNING only, NO write**; record the story under `manual_actions`
+  for a human to assign a `fixVersion`. NEVER silently guess.
+
+**NOTE (2026-07):** the current release-notes document stores release-process
+metadata per version (QA status, build/FTP, demo links) — NOT per-story feature
+text — so story-level matching will almost always fall through to WARNING. That is
+expected and safe; §19.2 (version-level) is the effective mechanism until the doc
+carries per-feature text (ideally with Jira keys).
+
+### 19.4 Provenance & precedence
+Every doc-sourced decision is logged with `release_source = doc` (+ score for
+story-level) and surfaced distinctly from Jira-sourced ones in the AUDIT SUMMARY
+and run log. Precedence: **Jira (§2–§6) > Document (§19).** The document only fills
+gaps; it never contradicts firm Jira data.

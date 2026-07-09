@@ -2097,11 +2097,12 @@
       "book_name": "Employee Management",
       "chapter_id": 117,
       "chapter_name": "Employee Profile",
-      "release_scope": "8.0",
+      "release_scope": "all-released",
       "jira_project_key": "CM",
       "epic_filter": null,
       "last_verified": "2026-06-29T00:00:00Z",
-      "last_synced_at": "2026-06-13T214513Z"
+      "last_synced_at": "2026-06-13T214513Z",
+      "_history": "2026-07-09: release_scope -> all-released (uniform structure across CM/Roster/OrangeSign/PNP; Roster migrated off __EPIC_ATOMIC__)."
     },
     "pnp_daily_sync": {
       "page_id": 551,
@@ -2123,12 +2124,12 @@
       "book_name": "Roster",
       "chapter_id": null,
       "chapter_name": null,
-      "release_scope": "__EPIC_ATOMIC__",
+      "release_scope": "all-released",
       "jira_project_key": "ROS",
       "epic_filter": null,
       "last_verified": "2026-06-29T00:00:00Z",
       "last_synced_at": "2026-06-13T214513Z",
-      "_history": "Corrected via roster_daily_sync auto-detection on 2026-06-24T214225Z: page_id 29->548, book_id 33->36, jira_project_key RST->ROS, release_scope 8.0.2->8.1."
+      "_history": "Corrected via roster_daily_sync auto-detection on 2026-06-24T214225Z: page_id 29->548, book_id 33->36, jira_project_key RST->ROS, release_scope 8.0.2->8.1. | 2026-07-09: release_scope -> all-released (uniform structure across CM/Roster/OrangeSign/PNP; Roster migrated off __EPIC_ATOMIC__)."
     },
     "orange_sign_daily_sync": {
       "page_id": 549,
@@ -2137,11 +2138,11 @@
       "book_name": "Orange Sign",
       "chapter_id": null,
       "chapter_name": null,
-      "release_scope": "8.0.2",
+      "release_scope": "all-released",
       "jira_project_key": "RV",
       "epic_filter": "RV-682",
       "last_verified": "2026-05-19T09:00:04Z",
-      "_history": "Created via FIRST-FIRE BOOTSTRAP on 2026-05-19T09:00:04Z (routine fire trig_01V9qhBPmLH6HaBrpp7pP8Nz). New Orange Sign book (id=37) + Orange Sign Core page (id=549) created in Specification shelf 3. Bootstrap committed sentinel update via feature branch claude/wizardly-newton-2E8yB; cherry-picked to main 2026-05-20.",
+      "_history": "Created via FIRST-FIRE BOOTSTRAP on 2026-05-19T09:00:04Z (routine fire trig_01V9qhBPmLH6HaBrpp7pP8Nz). New Orange Sign book (id=37) + Orange Sign Core page (id=549) created in Specification shelf 3. Bootstrap committed sentinel update via feature branch claude/wizardly-newton-2E8yB; cherry-picked to main 2026-05-20. | 2026-07-09: release_scope -> all-released (uniform structure across CM/Roster/OrangeSign/PNP; Roster migrated off __EPIC_ATOMIC__).",
       "_epic_filter": "RV is the Rivendell sprint-team project; it hosts many parallel features. This routine MUST scope every JQL by parent = RV-682 OR \"epic link\" = RV-682 (Orange Sign / In-House Esignature epic). Without the filter the routine would pull every Rivendell-team story at fixVersion 8.0.2, contaminating the spec page with unrelated content.",
       "last_synced_at": "2026-06-24T213415Z"
     },
