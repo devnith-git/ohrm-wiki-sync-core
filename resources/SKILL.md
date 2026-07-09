@@ -212,9 +212,19 @@ or to fall back to in-prompt heuristics.
 
 ---
 
-## STEP 3 — Release confirmation gate (Jira-only)
+## STEP 3 — Release confirmation gate (Jira-primary)
 
-**Authoritative reference: `release-filter-policy.md` §1–§6.**
+**Authoritative reference: `release-filter-policy.md` §1–§6, plus §19 (Document
+Release-Date Fallback).**
+
+**Document fallback (§19):** Jira is primary. When a candidate `fixVersion` is
+unreleased in Jira with no firm `releaseDate` (would be BLOCKED/SKIPPED), consult
+`_core/resources/OrangeHRM_Enterprise_Release_Notes.docx` via
+`python _core/automation/release_doc_fallback.py <docx>`: if the doc lists that
+exact version with a firm `releaseDate <= today`, treat it as released with
+`release_source = doc` (§19.2). Story-level: a no-`fixVersion` Story/Task may be
+matched to a doc version by keyword (≥0.75) → apply with `release_source = doc`,
+else WARNING + `manual_actions` (§19.3). Jira-confirmed data always wins (§19.5).
 
 ### 3-A. Fetch the configured fixVersion(s) from Jira
 
