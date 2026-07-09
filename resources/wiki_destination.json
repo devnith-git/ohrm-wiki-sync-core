@@ -2156,6 +2156,20 @@
       "destination_mode": "dynamic_by_affected_area",
       "allowed_destination_shelf_id": 3,
       "cs_feature_jql_filter": ""
+    },
+    "leave_daily_sync": {
+      "page_id": 0,
+      "page_name": "Leave Core",
+      "book_id": 12,
+      "book_name": "Leave",
+      "chapter_id": null,
+      "chapter_name": null,
+      "release_scope": "all-released",
+      "jira_project_key": "LMR",
+      "epic_filter": null,
+      "last_verified": "2026-07-09T00:00:00Z",
+      "last_synced_at": null,
+      "_history": "Created 2026-07-09: new Leave routine (LMR project), all-released + doc-fallback. book_id 12 = existing Leave book; page_id 0 -> first-fire bootstrap creates 'Leave Core' page."
     }
   },
   "exclusions": {
