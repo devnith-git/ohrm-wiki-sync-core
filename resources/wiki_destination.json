@@ -923,10 +923,44 @@
         ]
       },
       {
+        "id": 15,
+        "name": "Reports & Analytics",
+        "slug": "reports-analytics",
+        "sort_order": 3,
+        "deprecated_at": null,
+        "chapters": [],
+        "orphan_pages": [
+          {
+            "id": 17,
+            "name": "Specificatoin Template",
+            "slug": "specificatoin-template",
+            "sort_order": 1,
+            "deprecated_at": null,
+            "url": "/books/reports-analytics/page/specificatoin-template"
+          },
+          {
+            "id": 261,
+            "name": "Reports",
+            "slug": "reports",
+            "sort_order": 2,
+            "deprecated_at": null,
+            "url": "/books/reports-analytics/page/reports"
+          },
+          {
+            "id": 262,
+            "name": "Scheduled Reports",
+            "slug": "scheduled-reports",
+            "sort_order": 3,
+            "deprecated_at": null,
+            "url": "/books/reports-analytics/page/scheduled-reports"
+          }
+        ]
+      },
+      {
         "id": 12,
         "name": "Leave",
         "slug": "leave",
-        "sort_order": 3,
+        "sort_order": 4,
         "deprecated_at": null,
         "chapters": [
           {
@@ -1144,190 +1178,6 @@
         ]
       },
       {
-        "id": 13,
-        "name": "Performance",
-        "slug": "performance",
-        "sort_order": 4,
-        "deprecated_at": null,
-        "chapters": [
-          {
-            "id": 121,
-            "name": "Appraisal List",
-            "slug": "appraisal-list",
-            "sort_order": 1,
-            "deprecated_at": null,
-            "pages": [
-              {
-                "id": 286,
-                "name": "Appraisal List",
-                "slug": "appraisal-list",
-                "sort_order": 1,
-                "deprecated_at": null
-              },
-              {
-                "id": 378,
-                "name": "Appraisal Multiple View",
-                "slug": "appraisal-multiple-view",
-                "sort_order": 2,
-                "deprecated_at": null
-              },
-              {
-                "id": 396,
-                "name": "Appraisal Single View",
-                "slug": "appraisal-single-view",
-                "sort_order": 3,
-                "deprecated_at": null
-              },
-              {
-                "id": 379,
-                "name": "Appraisal Multiple View / Form Design",
-                "slug": "appraisal-multiple-view-form-design",
-                "sort_order": 4,
-                "deprecated_at": null
-              },
-              {
-                "id": 380,
-                "name": "Appraisal Multiple View / Evaluators",
-                "slug": "appraisal-multiple-view-evaluators",
-                "sort_order": 5,
-                "deprecated_at": null
-              },
-              {
-                "id": 431,
-                "name": "Appraisal List / Details",
-                "slug": "appraisal-list-details",
-                "sort_order": 6,
-                "deprecated_at": null
-              }
-            ]
-          },
-          {
-            "id": 120,
-            "name": "Goals",
-            "slug": "goals-vkU",
-            "sort_order": 2,
-            "deprecated_at": null,
-            "pages": [
-              {
-                "id": 67,
-                "name": "Goal List",
-                "slug": "goal-list",
-                "sort_order": 1,
-                "deprecated_at": null
-              },
-              {
-                "id": 137,
-                "name": "My Goals",
-                "slug": "my-goals",
-                "sort_order": 2,
-                "deprecated_at": null
-              },
-              {
-                "id": 290,
-                "name": "Goal Library",
-                "slug": "goal-library",
-                "sort_order": 3,
-                "deprecated_at": null
-              }
-            ]
-          },
-          {
-            "id": 107,
-            "name": "Employee Tracker",
-            "slug": "employee-tracker",
-            "sort_order": 3,
-            "deprecated_at": null,
-            "pages": [
-              {
-                "id": 385,
-                "name": "Tracker List",
-                "slug": "tracker-list-NAu",
-                "sort_order": 1,
-                "deprecated_at": null
-              },
-              {
-                "id": 292,
-                "name": "My Trackers",
-                "slug": "my-trackers",
-                "sort_order": 2,
-                "deprecated_at": null
-              },
-              {
-                "id": 293,
-                "name": "Manage Trackers",
-                "slug": "manage-trackers",
-                "sort_order": 3,
-                "deprecated_at": null
-              }
-            ]
-          },
-          {
-            "id": 108,
-            "name": "Configuration",
-            "slug": "configuration",
-            "sort_order": 4,
-            "deprecated_at": null,
-            "pages": [
-              {
-                "id": 381,
-                "name": "Appraisals / Evaluators",
-                "slug": "appraisals-evaluators",
-                "sort_order": 1,
-                "deprecated_at": null
-              },
-              {
-                "id": 382,
-                "name": "Appraisals / Questions",
-                "slug": "appraisals-questions",
-                "sort_order": 2,
-                "deprecated_at": null
-              },
-              {
-                "id": 407,
-                "name": "Appraisal / Templates",
-                "slug": "appraisal-templates",
-                "sort_order": 3,
-                "deprecated_at": null
-              }
-            ]
-          }
-        ],
-        "orphan_pages": [
-          {
-            "id": 287,
-            "name": "Appraisal Cycles",
-            "slug": "appraisal-cycles",
-            "sort_order": 1,
-            "deprecated_at": null,
-            "url": "/books/performance/page/appraisal-cycles"
-          },
-          {
-            "id": 136,
-            "name": "My Appraisals",
-            "slug": "my-appraisals",
-            "sort_order": 2,
-            "deprecated_at": null,
-            "url": "/books/performance/page/my-appraisals"
-          },
-          {
-            "id": 294,
-            "name": "Competency Profiles",
-            "slug": "competency-profiles",
-            "sort_order": 3,
-            "deprecated_at": null,
-            "url": "/books/performance/page/competency-profiles"
-          },
-          {
-            "id": 551,
-            "name": "Performance Core",
-            "slug": "performance-core-Y0Z",
-            "sort_order": 4,
-            "deprecated_at": null,
-            "url": "/books/performance/page/performance-core-Y0Z"
-          }
-        ]
-      },
-      {
         "id": 14,
         "name": "Time Tracking",
         "slug": "time-tracking",
@@ -1425,36 +1275,117 @@
         ]
       },
       {
-        "id": 15,
-        "name": "Reports & Analytics",
-        "slug": "reports-analytics",
+        "id": 17,
+        "name": "Attendance",
+        "slug": "attendance",
         "sort_order": 6,
         "deprecated_at": null,
-        "chapters": [],
+        "chapters": [
+          {
+            "id": 21,
+            "name": "ESS - My Monthly Attendance",
+            "slug": "ess-my-monthly-attendance",
+            "sort_order": 1,
+            "deprecated_at": null,
+            "pages": [
+              {
+                "id": 177,
+                "name": "My Monthly Attendance",
+                "slug": "my-monthly-attendance",
+                "sort_order": 1,
+                "deprecated_at": null
+              }
+            ]
+          },
+          {
+            "id": 20,
+            "name": "My Records",
+            "slug": "my-records",
+            "sort_order": 2,
+            "deprecated_at": null,
+            "pages": [
+              {
+                "id": 83,
+                "name": "My Records",
+                "slug": "my-records",
+                "sort_order": 1,
+                "deprecated_at": null
+              }
+            ]
+          }
+        ],
         "orphan_pages": [
           {
-            "id": 17,
+            "id": 21,
             "name": "Specificatoin Template",
             "slug": "specificatoin-template",
             "sort_order": 1,
             "deprecated_at": null,
-            "url": "/books/reports-analytics/page/specificatoin-template"
+            "url": "/books/attendance/page/specificatoin-template"
           },
           {
-            "id": 261,
-            "name": "Reports",
-            "slug": "reports",
+            "id": 114,
+            "name": "Data Upload",
+            "slug": "data-upload",
             "sort_order": 2,
             "deprecated_at": null,
-            "url": "/books/reports-analytics/page/reports"
+            "url": "/books/attendance/page/data-upload"
           },
           {
-            "id": 262,
-            "name": "Scheduled Reports",
-            "slug": "scheduled-reports",
+            "id": 141,
+            "name": "ESS - My Attendance Sheet",
+            "slug": "ess-my-attendance-sheet",
             "sort_order": 3,
             "deprecated_at": null,
-            "url": "/books/reports-analytics/page/scheduled-reports"
+            "url": "/books/attendance/page/ess-my-attendance-sheet"
+          },
+          {
+            "id": 151,
+            "name": "Pay Policies",
+            "slug": "pay-policies",
+            "sort_order": 4,
+            "deprecated_at": null,
+            "url": "/books/attendance/page/pay-policies"
+          },
+          {
+            "id": 132,
+            "name": "Approve Attendance Sheets",
+            "slug": "approve-attendance-sheets",
+            "sort_order": 5,
+            "deprecated_at": null,
+            "url": "/books/attendance/page/approve-attendance-sheets"
+          },
+          {
+            "id": 130,
+            "name": "Employee Records",
+            "slug": "employee-records",
+            "sort_order": 6,
+            "deprecated_at": null,
+            "url": "/books/attendance/page/employee-records"
+          },
+          {
+            "id": 128,
+            "name": "Configurations",
+            "slug": "configurations",
+            "sort_order": 7,
+            "deprecated_at": null,
+            "url": "/books/attendance/page/configurations"
+          },
+          {
+            "id": 281,
+            "name": "Attendance Sheets",
+            "slug": "attendance-sheets",
+            "sort_order": 8,
+            "deprecated_at": null,
+            "url": "/books/attendance/page/attendance-sheets"
+          },
+          {
+            "id": 282,
+            "name": "Punch In/Out",
+            "slug": "punch-inout",
+            "sort_order": 9,
+            "deprecated_at": null,
+            "url": "/books/attendance/page/punch-inout"
           }
         ]
       },
@@ -1652,40 +1583,149 @@
         ]
       },
       {
-        "id": 17,
-        "name": "Attendance",
-        "slug": "attendance",
+        "id": 13,
+        "name": "Performance",
+        "slug": "performance",
         "sort_order": 8,
         "deprecated_at": null,
         "chapters": [
           {
-            "id": 21,
-            "name": "ESS - My Monthly Attendance",
-            "slug": "ess-my-monthly-attendance",
+            "id": 121,
+            "name": "Appraisal List",
+            "slug": "appraisal-list",
             "sort_order": 1,
             "deprecated_at": null,
             "pages": [
               {
-                "id": 177,
-                "name": "My Monthly Attendance",
-                "slug": "my-monthly-attendance",
+                "id": 286,
+                "name": "Appraisal List",
+                "slug": "appraisal-list",
                 "sort_order": 1,
+                "deprecated_at": null
+              },
+              {
+                "id": 378,
+                "name": "Appraisal Multiple View",
+                "slug": "appraisal-multiple-view",
+                "sort_order": 2,
+                "deprecated_at": null
+              },
+              {
+                "id": 396,
+                "name": "Appraisal Single View",
+                "slug": "appraisal-single-view",
+                "sort_order": 3,
+                "deprecated_at": null
+              },
+              {
+                "id": 379,
+                "name": "Appraisal Multiple View / Form Design",
+                "slug": "appraisal-multiple-view-form-design",
+                "sort_order": 4,
+                "deprecated_at": null
+              },
+              {
+                "id": 380,
+                "name": "Appraisal Multiple View / Evaluators",
+                "slug": "appraisal-multiple-view-evaluators",
+                "sort_order": 5,
+                "deprecated_at": null
+              },
+              {
+                "id": 431,
+                "name": "Appraisal List / Details",
+                "slug": "appraisal-list-details",
+                "sort_order": 6,
                 "deprecated_at": null
               }
             ]
           },
           {
-            "id": 20,
-            "name": "My Records",
-            "slug": "my-records",
+            "id": 120,
+            "name": "Goals",
+            "slug": "goals-vkU",
             "sort_order": 2,
             "deprecated_at": null,
             "pages": [
               {
-                "id": 83,
-                "name": "My Records",
-                "slug": "my-records",
+                "id": 67,
+                "name": "Goal List",
+                "slug": "goal-list",
                 "sort_order": 1,
+                "deprecated_at": null
+              },
+              {
+                "id": 137,
+                "name": "My Goals",
+                "slug": "my-goals",
+                "sort_order": 2,
+                "deprecated_at": null
+              },
+              {
+                "id": 290,
+                "name": "Goal Library",
+                "slug": "goal-library",
+                "sort_order": 3,
+                "deprecated_at": null
+              }
+            ]
+          },
+          {
+            "id": 107,
+            "name": "Employee Tracker",
+            "slug": "employee-tracker",
+            "sort_order": 3,
+            "deprecated_at": null,
+            "pages": [
+              {
+                "id": 385,
+                "name": "Tracker List",
+                "slug": "tracker-list-NAu",
+                "sort_order": 1,
+                "deprecated_at": null
+              },
+              {
+                "id": 292,
+                "name": "My Trackers",
+                "slug": "my-trackers",
+                "sort_order": 2,
+                "deprecated_at": null
+              },
+              {
+                "id": 293,
+                "name": "Manage Trackers",
+                "slug": "manage-trackers",
+                "sort_order": 3,
+                "deprecated_at": null
+              }
+            ]
+          },
+          {
+            "id": 108,
+            "name": "Configuration",
+            "slug": "configuration",
+            "sort_order": 4,
+            "deprecated_at": null,
+            "pages": [
+              {
+                "id": 381,
+                "name": "Appraisals / Evaluators",
+                "slug": "appraisals-evaluators",
+                "sort_order": 1,
+                "deprecated_at": null
+              },
+              {
+                "id": 382,
+                "name": "Appraisals / Questions",
+                "slug": "appraisals-questions",
+                "sort_order": 2,
+                "deprecated_at": null
+              },
+              {
+                "id": 407,
+                "name": "Appraisal / Templates",
+                "slug": "appraisal-templates",
+                "sort_order": 3,
                 "deprecated_at": null
               }
             ]
@@ -1693,76 +1733,36 @@
         ],
         "orphan_pages": [
           {
-            "id": 21,
-            "name": "Specificatoin Template",
-            "slug": "specificatoin-template",
+            "id": 287,
+            "name": "Appraisal Cycles",
+            "slug": "appraisal-cycles",
             "sort_order": 1,
             "deprecated_at": null,
-            "url": "/books/attendance/page/specificatoin-template"
+            "url": "/books/performance/page/appraisal-cycles"
           },
           {
-            "id": 114,
-            "name": "Data Upload",
-            "slug": "data-upload",
+            "id": 136,
+            "name": "My Appraisals",
+            "slug": "my-appraisals",
             "sort_order": 2,
             "deprecated_at": null,
-            "url": "/books/attendance/page/data-upload"
+            "url": "/books/performance/page/my-appraisals"
           },
           {
-            "id": 141,
-            "name": "ESS - My Attendance Sheet",
-            "slug": "ess-my-attendance-sheet",
+            "id": 294,
+            "name": "Competency Profiles",
+            "slug": "competency-profiles",
             "sort_order": 3,
             "deprecated_at": null,
-            "url": "/books/attendance/page/ess-my-attendance-sheet"
+            "url": "/books/performance/page/competency-profiles"
           },
           {
-            "id": 151,
-            "name": "Pay Policies",
-            "slug": "pay-policies",
+            "id": 551,
+            "name": "Performance Core",
+            "slug": "performance-core-Y0Z",
             "sort_order": 4,
             "deprecated_at": null,
-            "url": "/books/attendance/page/pay-policies"
-          },
-          {
-            "id": 132,
-            "name": "Approve Attendance Sheets",
-            "slug": "approve-attendance-sheets",
-            "sort_order": 5,
-            "deprecated_at": null,
-            "url": "/books/attendance/page/approve-attendance-sheets"
-          },
-          {
-            "id": 130,
-            "name": "Employee Records",
-            "slug": "employee-records",
-            "sort_order": 6,
-            "deprecated_at": null,
-            "url": "/books/attendance/page/employee-records"
-          },
-          {
-            "id": 128,
-            "name": "Configurations",
-            "slug": "configurations",
-            "sort_order": 7,
-            "deprecated_at": null,
-            "url": "/books/attendance/page/configurations"
-          },
-          {
-            "id": 281,
-            "name": "Attendance Sheets",
-            "slug": "attendance-sheets",
-            "sort_order": 8,
-            "deprecated_at": null,
-            "url": "/books/attendance/page/attendance-sheets"
-          },
-          {
-            "id": 282,
-            "name": "Punch In/Out",
-            "slug": "punch-inout",
-            "sort_order": 9,
-            "deprecated_at": null,
-            "url": "/books/attendance/page/punch-inout"
+            "url": "/books/performance/page/performance-core-Y0Z"
           }
         ]
       },
@@ -2064,7 +2064,7 @@
             "id": 549,
             "name": "Orange Sign Core",
             "slug": "orange-sign-core",
-            "sort_order": 2,
+            "sort_order": 1,
             "deprecated_at": null,
             "url": "/books/orange-sign/page/orange-sign-core"
           }
@@ -2074,11 +2074,11 @@
     "node_count": {
       "books": 16,
       "chapters": 38,
-      "pages": 205,
-      "deprecated": 1
+      "pages": 206,
+      "deprecated": 0
     },
-    "last_synced_at": "2026-06-29T214333Z",
-    "last_synced_run": "cm_daily_sync",
+    "last_synced_at": "2026-07-10T00:00:00Z",
+    "last_synced_run": "manual-operator-resolve (proxy blocked routine self-commit)",
     "last_synced_commit_sha": "68b55ed41f133a26a2c3ed5d8338644debfef1fd"
   },
   "canonical_guideline_page": {
