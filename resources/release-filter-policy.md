@@ -1326,20 +1326,27 @@ Target repo + branch (split core + per-project layout):
   API: `GET /repos/devnith-git/ohrm-wiki-sync-core/contents/resources/wiki_destination.json?ref=main`
   for the current `sha` → `PUT` the updated file with that `sha` and
   `branch=main`.
-- `GITHUB_TOKEN` has **`contents:write` on `ohrm-wiki-sync-core`**
-  (the shared fleet token; verified `push=true`). **Do NOT assume the
-  token is read-only.** If the `PUT` returns a non-2xx, record the
-  **exact HTTP status code + response body** (secrets redacted) as the
-  skip reason — NEVER write a generic "read-only" cause. On `409`/`412`
-  (a concurrent routine updated the file first), re-`GET` the `sha`,
-  re-apply the nav-tree delta, and retry once.
+- The **fleet routine token is READ-ONLY on core** — it carries
+  `contents:write` on the routine's **own project repo** only, plus
+  read on core; the runner's git proxy also blocks core writes. So the
+  Contents API `PUT` to `ohrm-wiki-sync-core` is **expected to return
+  `403`** from a per-project routine. This is **not** an error and
+  **NOT** a "Manual Action Required": the `specification_nav_tree` is
+  **reference-only** and does not gate the wiki sync in any way.
+- On a `403` (or any non-2xx) from the core `PUT`: **soft-skip.** Log
+  one INFO line `nav-tree: core self-commit skipped (HTTP <code>) —
+  reference-only; delta recorded below for out-of-band persistence`,
+  emit the full diff under `## STEP 2.x — Nav-Tree Sync`, and **proceed
+  normally**. Do NOT add a `manual_actions` entry and do NOT change the
+  run `status`. On `409`/`412` (concurrent update) you MAY re-`GET` the
+  `sha` and retry once, but a persistent non-2xx remains a soft-skip.
+- Persistence of the nav-tree delta to core is handled **out-of-band**
+  by an operator (direct push) or a dedicated core-write job whose
+  token/path bypasses the proxy — NEVER by the per-project routines.
 
 If `GITHUB_TOKEN` is genuinely unset (zero-length), skip the self-commit
 silently but STILL log every diff line under `## STEP 2.x — Nav-Tree
-Sync` in the audit log; the next fire with a token picks up the
-unwritten delta. The phrase "read-only" may only appear as a skip reason
-if an actual GitHub `403` was received AND its body (which explicitly
-states the permission failure) is quoted verbatim in the log.
+Sync`; the next out-of-band persistence picks up the unwritten delta.
 
 If the diff is empty (zero changes), no commit is made; the routine
 logs `specification_nav_tree: no change (<books> books, <chapters>
