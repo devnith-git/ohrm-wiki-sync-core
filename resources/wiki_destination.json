@@ -2170,6 +2170,28 @@
       "last_verified": "2026-07-09T00:00:00Z",
       "last_synced_at": null,
       "_history": "Created 2026-07-09: new Leave routine (LMR project), all-released + doc-fallback. book_id 12 = existing Leave book; page_id 0 -> first-fire bootstrap creates 'Leave Core' page."
+    },
+    "cami_daily_sync": {
+      "page_id": 0,
+      "page_name": null,
+      "book_id": 17,
+      "book_name": "Attendance",
+      "chapter_id": null,
+      "chapter_name": null,
+      "release_scope": "doc-driven",
+      "jira_project_key": null,
+      "epic_filter": null,
+      "scope_source": "documents",
+      "specs_dir": "CAMI - Specs/",
+      "release_authority": "document",
+      "release_notes_doc": "analysis/OrangeHRM_Enterprise_Release_Notes_Organized (1).docx",
+      "destination_mode": "primary_attendance_plus_impacted_areas",
+      "allowed_destination_shelf_id": 3,
+      "skill": "cami_attendance_doc_sync_skill.md",
+      "repo": "devnith-git/ohrm-wiki-sync-cami",
+      "last_verified": "2026-07-15T00:00:00Z",
+      "last_synced_at": null,
+      "_history": "Created 2026-07-15: doc-driven CAMI Attendance routine. UNLIKE the Jira routines, scope = CAMI - Specs/*.docx (NOT Jira) and release authority = the release-notes document (release date <= today). Multi-destination: Attendance book 17 primary + cross-module shelf-3 pages resolved from each spec's 'Impacted Areas' section. Skill + impact map live in the ohrm-wiki-sync-cami repo; jira_project_key is null by design."
     }
   },
   "exclusions": {
