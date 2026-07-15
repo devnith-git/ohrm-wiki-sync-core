@@ -104,16 +104,62 @@ class ReleaseDoc:
             best["reason"] = ("score below %.2f" % APPLY_THRESHOLD) if best["score"] < APPLY_THRESHOLD else why
         return best
 
+VER_RE = re.compile(r'^\d+\.\d+(?:\.\d+)?$')
+
+def _index_from_row(cells, out):
+    if len(cells) >= 2 and VER_RE.match(cells[0]) and ISO_RE.match(cells[1]):
+        out[cells[0]] = cells[1]
+
+def _version_index_dates_docx(docx_path):
+    """Read the 'Version Index' summary TABLE (header: Version | Release Date | ...)
+    via python-docx. Returns {version: 'YYYY-MM-DD'} for rows with a firm ISO date.
+    This table is the curated release-date index; version *headings* elsewhere in the
+    doc can carry stale placeholders like '(2026-06-xx)', and the regex block parser
+    mangles this particular table's XML, so python-docx is the reliable reader here."""
+    try:
+        import docx
+        d = docx.Document(docx_path)
+    except Exception:
+        return {}
+    out = {}
+    for tb in d.tables:
+        if not tb.rows:
+            continue
+        hdr = [c.text.strip().lower() for c in tb.rows[0].cells]
+        if len(hdr) >= 2 and hdr[0] == 'version' and hdr[1].startswith('release date'):
+            for row in tb.rows[1:]:
+                _index_from_row([c.text.strip() for c in row.cells], out)
+    return out
+
+def _version_index_dates_lines(lines):
+    """Fallback (no python-docx): scan block lines for the Version|Release Date table."""
+    out = {}
+    in_index = False
+    for ln in lines:
+        cells = [c.strip() for c in ln.split('|')]
+        low = [c.lower() for c in cells]
+        if len(cells) >= 2 and low[0] == 'version' and low[1].startswith('release date'):
+            in_index = True
+            continue
+        if in_index:
+            if len(cells) >= 2 and VER_RE.match(cells[0]):
+                _index_from_row(cells, out)
+            elif cells[0]:
+                in_index = False
+    return out
+
 def parse(docx_path):
     lines = _blocks(docx_path)
     version_dates, version_features = {}, {}
+    index_dates = _version_index_dates_docx(docx_path) or _version_index_dates_lines(lines)
     cur = None
     for ln in lines:
         m = DATE_RE.match(ln)
         if m:
             cur = m.group('ver')
             dt = m.group('date').strip()
-            version_dates[cur] = dt if ISO_RE.match(dt) else None
+            # A firm heading date wins; otherwise fall back to the Version Index table.
+            version_dates[cur] = dt if ISO_RE.match(dt) else index_dates.get(cur)
             version_features.setdefault(cur, [])
             continue
         if cur:
@@ -123,6 +169,10 @@ def parse(docx_path):
                 continue
             if len(ln) > 8 and not ln.startswith('|'):
                 version_features[cur].append(ln)
+    # Versions listed in the Version Index table but never given a heading are still
+    # resolvable for the release gate (firm date from the table).
+    for ver, dt in index_dates.items():
+        version_dates.setdefault(ver, dt)
     return ReleaseDoc(version_dates, version_features)
 
 if __name__ == "__main__":
