@@ -109,10 +109,12 @@ def extract_email_body(text: str) -> str | None:
     return m.group(1).strip() if m else None
 
 
-def load_recipients(repo_root: Path) -> list[str]:
-    """Recipient resolution:
-    1. EMAIL_RECIPIENTS env var (comma-separated)
-    2. resources/email_recipients.json (primary[] + additional[])
+def load_recipients() -> list[str]:
+    """Recipient resolution (ONE common base):
+    1. EMAIL_RECIPIENTS env var (comma-separated) — operational override
+    2. THIS repo's resources/email_recipients.json — resolved relative to the
+       script itself (ohrm-wiki-sync-core), NOT the log's repo. Every routine
+       invokes _core/routines/send_notification.py, so all share core's list.
     """
     out: list[str] = []
     seen: set[str] = set()
@@ -121,13 +123,14 @@ def load_recipients(repo_root: Path) -> list[str]:
     if env_val:
         raw = [p.strip().strip('"').strip("'") for p in env_val.split(",")]
     else:
-        path = repo_root / "resources" / "email_recipients.json"
+        core_root = Path(__file__).resolve().parents[1]
+        path = core_root / "resources" / "email_recipients.json"
         if not path.exists():
             fail(
                 f"no recipient source — set EMAIL_RECIPIENTS in the "
                 f"routine env vars, or commit "
-                f"resources/email_recipients.json with at least one "
-                f"address.",
+                f"resources/email_recipients.json in ohrm-wiki-sync-core "
+                f"with at least one address.",
                 code=2,
             )
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -248,7 +251,7 @@ def main() -> int:
         )
 
     subject = fields.get("email_subject") or "OHRM Wiki Sync notification"
-    recipients = load_recipients(repo_root)
+    recipients = load_recipients()
     plain_body = build_plain_text_fallback(fields)
 
     print(
