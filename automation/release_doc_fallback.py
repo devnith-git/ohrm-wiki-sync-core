@@ -78,6 +78,39 @@ class ReleaseDoc:
         today = today or date.today().isoformat()
         return (d <= today, d, "doc-confirmed" if d <= today else "future date in doc")
 
+    @staticmethod
+    def _vkey(v):
+        """Semantic-version sort key, e.g. '7.17.2' -> (7,17,2). Non-numeric
+        segments coerce to -1 so a malformed version never crashes ordering."""
+        out = []
+        for seg in str(v).strip().split('.'):
+            try: out.append(int(seg))
+            except ValueError: out.append(-1)
+        return tuple(out)
+
+    def max_released_version(self, today=None):
+        """Highest version in the doc with a firm release date <= today."""
+        today = today or date.today().isoformat()
+        rel = [v for v, d in self.version_dates.items()
+               if d and ISO_RE.match(d) and d <= today]
+        return max(rel, key=self._vkey) if rel else None
+
+    def is_released_by_ordering(self, version, today=None):
+        """Version-ordering inference: a version ABSENT from the doc (no firm
+        date) but strictly BELOW the highest released version is necessarily an
+        older line that already shipped -> treat as released. A version >= the
+        current release line (e.g. a future 8.2 when the doc tops out at 8.1.2)
+        stays unreleased. Firm-dated versions are handled by is_released_by_doc;
+        this only fills the 'absent from doc, clearly old' gap."""
+        today = today or date.today().isoformat()
+        d = self.version_date(version)
+        if d:
+            return (d <= today, d, "doc-confirmed")
+        mx = self.max_released_version(today)
+        if mx and self._vkey(version) < self._vkey(mx):
+            return (True, None, f"below current release line (< {mx})")
+        return (False, None, "not below current release line / not in doc")
+
     def match_story(self, summary, description="", today=None):
         skw = _kw(summary) | _kw(description)
         if not skw:
